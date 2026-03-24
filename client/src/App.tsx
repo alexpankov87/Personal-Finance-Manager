@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import { fetchCategories, createCategory, fetchTransactions, createTransaction, deleteTransaction } from './services/api';
+import Dashboard from './Dashboard';
 
 interface Category {
   _id: string;
@@ -142,7 +143,7 @@ function App() {
           </p>
         </div>
       </div>
-
+      <Dashboard transactions={transactions} />
       <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
         {/* Левая колонка: категории */}
         <div style={{ flex: 1, minWidth: '250px' }}>
