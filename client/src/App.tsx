@@ -3,6 +3,8 @@ import 'remixicon/fonts/remixicon.css';
 import { fetchCategories, createCategory, fetchTransactions, createTransaction, deleteTransaction } from './services/api';
 import Dashboard from './Dashboard';
 import RecurringManager from './RecurringManager';
+import Papa from 'papaparse';
+
 
 interface Category {
   _id: string;
@@ -16,7 +18,7 @@ interface Transaction {
   _id: string;
   amount: number;
   type: 'income' | 'expense';
-  category: Category; // populated
+  category: Category;
   date: string;
   description?: string;
 }
@@ -41,24 +43,23 @@ function App() {
     fetch('http://localhost:5000/api/health')
       .then(res => res.json())
       .then(data => setMessage(data.message))
-      .catch(err => setMessage('Ошибка соединения с сервером'));
+      .catch(() => setMessage('Ошибка соединения с сервером'));
 
     loadCategories();
     loadTransactions();
     loadForecast();
-    
   }, []);
 
   const loadForecast = async () => {
-  try {
-    const res = await fetch('http://localhost:5000/api/forecast?months=3&inflation=0.05');
-    const data = await res.json();
-    setForecast(data);
-  } catch (error) {
-    console.error('Failed to load forecast', error);
-  }
-};
-  
+    try {
+      const res = await fetch('http://localhost:5000/api/forecast?months=3&inflation=0.05');
+      const data = await res.json();
+      setForecast(data);
+    } catch (error) {
+      console.error('Failed to load forecast', error);
+    }
+  };
+
   const loadCategories = async () => {
     try {
       const data = await fetchCategories();
@@ -110,7 +111,7 @@ function App() {
         description: '',
       });
       loadTransactions();
-      loadCategories(); // обновить категории (на случай, если изменился баланс категории)
+      loadCategories();
     } catch (error) {
       console.error('Failed to create transaction', error);
     }
@@ -126,6 +127,48 @@ function App() {
       }
     }
   };
+
+  // Экспорт в CSV
+  const exportToCSV = () => {
+    const data = transactions.map(t => ({
+      Дата: new Date(t.date).toLocaleDateString(),
+      Категория: t.category.name,
+      Описание: t.description || '',
+      Сумма: `${t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}`,
+    }));
+    const csv = Papa.unparse(data, { delimiter: ';' });
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', 'transactions.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Экспорт в PDF
+    const exportToPDF = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/export/pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transactions }),
+        });
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'transactions.pdf');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Failed to export PDF', error);
+      }
+    };
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')
@@ -157,7 +200,9 @@ function App() {
           </p>
         </div>
       </div>
+
       <Dashboard transactions={transactions} />
+
       {forecast && (
         <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
           <h2>Прогноз бюджета на следующий месяц</h2>
@@ -184,7 +229,9 @@ function App() {
           </div>
         </div>
       )}
+
       <RecurringManager categories={categories} />
+
       <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
         {/* Левая колонка: категории */}
         <div style={{ flex: 1, minWidth: '250px' }}>
@@ -267,7 +314,18 @@ function App() {
             </div>
           </form>
 
-          <h2>Список транзакций</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <h2>Список транзакций</h2>
+            <div>
+              <button onClick={exportToCSV} style={{ marginRight: '10px', padding: '5px 10px', cursor: 'pointer' }}>
+                Экспорт CSV
+              </button>
+              <button onClick={exportToPDF} style={{ padding: '5px 10px', cursor: 'pointer' }}>
+                Экспорт PDF
+              </button>
+            </div>
+          </div>
+
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #ccc' }}>
@@ -276,7 +334,7 @@ function App() {
                 <th style={{ textAlign: 'left', padding: '8px' }}>Описание</th>
                 <th style={{ textAlign: 'right', padding: '8px' }}>Сумма</th>
                 <th style={{ width: '50px' }}></th>
-              </tr>
+               </tr>
             </thead>
             <tbody>
               {transactions.map(t => (
