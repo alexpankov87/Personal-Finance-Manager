@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import { fetchCategories, createCategory, fetchTransactions, createTransaction, deleteTransaction } from './services/api';
 import Dashboard from './Dashboard';
+import RecurringManager from './RecurringManager';
 
 interface Category {
   _id: string;
@@ -144,6 +145,7 @@ function App() {
         </div>
       </div>
       <Dashboard transactions={transactions} />
+      <RecurringManager categories={categories} />
       <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
         {/* Левая колонка: категории */}
         <div style={{ flex: 1, minWidth: '250px' }}>
@@ -250,7 +252,9 @@ function App() {
                     {t.type === 'income' ? '+' : '-'}{t.amount.toFixed(2)} ₽
                   </td>
                   <td style={{ padding: '8px', textAlign: 'center' }}>
-                    <button onClick={() => handleDeleteTransaction(t._id)}>🗑️</button>
+                    <button onClick={() => handleDeleteTransaction(t._id)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                      <i className="ri-delete-bin-line"></i>
+                    </button>
                   </td>
                 </tr>
               ))}

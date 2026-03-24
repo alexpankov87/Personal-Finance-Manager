@@ -46,3 +46,35 @@ export const deleteTransaction = async (id: string) => {
   if (!res.ok) throw new Error('Failed to delete transaction');
   return res.json();
 };
+
+export const fetchRecurring = async () => {
+  const res = await fetch(`${API_BASE}/recurring`);
+  if (!res.ok) throw new Error('Failed to fetch recurring');
+  return res.json();
+};
+
+export const createRecurring = async (data: any) => {
+  const res = await fetch(`${API_BASE}/recurring`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('Failed to create recurring');
+  return res.json();
+};
+
+export const updateRecurring = async (id: string, data: any) => {
+  const res = await fetch(`${API_BASE}/recurring/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('Failed to update recurring');
+  return res.json();
+};
+
+export const deleteRecurring = async (id: string) => {
+  const res = await fetch(`${API_BASE}/recurring/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete recurring');
+  return res.json();
+};
