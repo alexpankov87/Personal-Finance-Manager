@@ -35,6 +35,7 @@ function App() {
     description: '',
   });
   const [message, setMessage] = useState('');
+  const [forecast, setForecast] = useState<any>(null);
 
   useEffect(() => {
     fetch('http://localhost:5000/api/health')
@@ -44,8 +45,20 @@ function App() {
 
     loadCategories();
     loadTransactions();
+    loadForecast();
+    
   }, []);
 
+  const loadForecast = async () => {
+  try {
+    const res = await fetch('http://localhost:5000/api/forecast?months=3&inflation=0.05');
+    const data = await res.json();
+    setForecast(data);
+  } catch (error) {
+    console.error('Failed to load forecast', error);
+  }
+};
+  
   const loadCategories = async () => {
     try {
       const data = await fetchCategories();
@@ -145,6 +158,32 @@ function App() {
         </div>
       </div>
       <Dashboard transactions={transactions} />
+      {forecast && (
+        <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+          <h2>Прогноз бюджета на следующий месяц</h2>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1 }}>
+              <h3>Текущий месяц (среднее за 3 мес)</h3>
+              <p>Доходы: {forecast.averageMonthly.income.toFixed(2)} ₽</p>
+              <p>Расходы: {forecast.averageMonthly.expense.toFixed(2)} ₽</p>
+              <p>Баланс: {(forecast.averageMonthly.income - forecast.averageMonthly.expense).toFixed(2)} ₽</p>
+            </div>
+            <div style={{ flex: 1 }}>
+              <h3>Повторяющиеся операции в следующем месяце</h3>
+              <p>Доходы: +{forecast.recurringNextMonth.income.toFixed(2)} ₽</p>
+              <p>Расходы: -{forecast.recurringNextMonth.expense.toFixed(2)} ₽</p>
+            </div>
+            <div style={{ flex: 1 }}>
+              <h3>Прогноз (с учётом инфляции +5%)</h3>
+              <p>Доходы: {forecast.forecastNextMonth.income.toFixed(2)} ₽</p>
+              <p>Расходы: {forecast.forecastNextMonth.expense.toFixed(2)} ₽</p>
+              <p style={{ fontWeight: 'bold', color: (forecast.forecastNextMonth.income - forecast.forecastNextMonth.expense) >= 0 ? '#2e7d32' : '#c62828' }}>
+                Ожидаемый баланс: {(forecast.forecastNextMonth.income - forecast.forecastNextMonth.expense).toFixed(2)} ₽
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       <RecurringManager categories={categories} />
       <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
         {/* Левая колонка: категории */}

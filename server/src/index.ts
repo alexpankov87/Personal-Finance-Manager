@@ -8,6 +8,7 @@ import transactionRoutes from './routes/transactionRoutes';
 import { seedCategories } from './seeds/categories';
 import cron from 'node-cron';
 import { processRecurringTransactions } from './cron/recurringJobs';
+import forecastRoutes from './routes/forecastRoutes';
 
 dotenv.config();
 connectDB().then(() => {
@@ -32,6 +33,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/categories', categoryRoutes);
 app.use('/api/transactions', transactionRoutes); 
 app.use('/api/recurring', recurringRoutes);
+app.use('/api/forecast', forecastRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
