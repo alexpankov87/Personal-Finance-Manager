@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
 import categoryRoutes from './routes/categoryRoutes';
+import transactionRoutes from './routes/transactionRoutes'; // <-- добавить
 import { seedCategories } from './seeds/categories';
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/categories', categoryRoutes);
+app.use('/api/transactions', transactionRoutes); // <-- добавить
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
