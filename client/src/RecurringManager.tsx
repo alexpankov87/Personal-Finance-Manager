@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { fetchRecurring, createRecurring, updateRecurring, deleteRecurring } from './services/api';
 
 interface Category {
@@ -19,6 +20,7 @@ interface Recurring {
 }
 
 const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) => {
+  const { t } = useTranslation();
   const [recurringList, setRecurringList] = useState<Recurring[]>([]);
   const [form, setForm] = useState({
     amount: '',
@@ -47,7 +49,7 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.category) {
-      alert('Выберите категорию');
+      alert(t('selectCategory'));
       return;
     }
     const data = {
@@ -95,7 +97,7 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Удалить шаблон?')) {
+    if (window.confirm(t('deleteConfirmRecurring'))) {
       try {
         await deleteRecurring(id);
         loadRecurring();
@@ -116,13 +118,13 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
 
   return (
     <div style={{ marginTop: '30px', borderTop: '1px solid #ccc', paddingTop: '20px' }}>
-      <h2>Повторяющиеся операции</h2>
+      <h2>{t('recurringOperations')}</h2>
 
       <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <input
             type="number"
-            placeholder="Сумма"
+            placeholder={t('amount')}
             value={form.amount}
             onChange={e => setForm({ ...form, amount: e.target.value })}
             required
@@ -132,22 +134,22 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
             value={form.type}
             onChange={e => setForm({ ...form, type: e.target.value as any })}
           >
-            <option value="expense">Расход</option>
-            <option value="income">Доход</option>
+            <option value="expense">{t('expenseType')}</option>
+            <option value="income">{t('incomeType')}</option>
           </select>
           <select
             value={form.category}
             onChange={e => setForm({ ...form, category: e.target.value })}
             required
           >
-            <option value="">Выберите категорию</option>
+            <option value="">{t('selectCategory')}</option>
             {categories.filter(c => c.type === form.type).map(cat => (
               <option key={cat._id} value={cat._id}>{cat.name}</option>
             ))}
           </select>
           <input
             type="text"
-            placeholder="Описание"
+            placeholder={t('description')}
             value={form.description}
             onChange={e => setForm({ ...form, description: e.target.value })}
           />
@@ -155,9 +157,9 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
             value={form.period}
             onChange={e => setForm({ ...form, period: e.target.value as any })}
           >
-            <option value="daily">Ежедневно</option>
-            <option value="weekly">Еженедельно</option>
-            <option value="monthly">Ежемесячно</option>
+            <option value="daily">{t('daily')}</option>
+            <option value="weekly">{t('weekly')}</option>
+            <option value="monthly">{t('monthly')}</option>
           </select>
           <input
             type="date"
@@ -171,9 +173,9 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
               checked={form.active}
               onChange={e => setForm({ ...form, active: e.target.checked })}
             />
-            Активна
+            {t('active')}
           </label>
-          <button type="submit">{editingId ? 'Обновить' : 'Добавить'}</button>
+          <button type="submit">{editingId ? t('save') : t('add')}</button>
           {editingId && (
             <button type="button" onClick={() => {
               setEditingId(null);
@@ -186,7 +188,7 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
                 nextRun: new Date().toISOString().slice(0, 10),
                 active: true,
               });
-            }}>Отмена</button>
+            }}>{t('cancel')}</button>
           )}
         </div>
       </form>
@@ -194,12 +196,12 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid #ccc' }}>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Сумма</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Категория</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Описание</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Период</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Следующий запуск</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>Статус</th>
+            <th style={{ textAlign: 'left', padding: '8px' }}>{t('amount')}</th>
+            <th style={{ textAlign: 'left', padding: '8px' }}>{t('category')}</th>
+            <th style={{ textAlign: 'left', padding: '8px' }}>{t('description')}</th>
+            <th style={{ textAlign: 'left', padding: '8px' }}>{t('period')}</th>
+            <th style={{ textAlign: 'left', padding: '8px' }}>{t('nextRun')}</th>
+            <th style={{ textAlign: 'left', padding: '8px' }}>{t('status')}</th>
             <th style={{ width: '100px' }}></th>
            </tr>
         </thead>
@@ -212,23 +214,23 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
               <td style={{ padding: '8px' }}>{item.category.name}</td>
               <td style={{ padding: '8px' }}>{item.description || '-'}</td>
               <td style={{ padding: '8px' }}>
-                {item.period === 'daily' && 'Ежедневно'}
-                {item.period === 'weekly' && 'Еженедельно'}
-                {item.period === 'monthly' && 'Ежемесячно'}
+                {item.period === 'daily' && t('daily')}
+                {item.period === 'weekly' && t('weekly')}
+                {item.period === 'monthly' && t('monthly')}
               </td>
               <td style={{ padding: '8px' }}>{new Date(item.nextRun).toLocaleDateString()}</td>
               <td style={{ padding: '8px' }}>
                 <button onClick={() => toggleActive(item)}>
-                  {item.active ? 'Активна' : 'Неактивна'}
+                  {item.active ? t('active') : t('inactive')}
                 </button>
               </td>
               <td style={{ padding: '8px' }}>
-                    <button onClick={() => handleEdit(item)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <i className="ri-edit-line"></i>
-                    </button>
-                    <button onClick={() => handleDelete(item._id)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <i className="ri-delete-bin-line"></i>
-                    </button>
+                <button onClick={() => handleEdit(item)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <i className="ri-edit-line"></i>
+                </button>
+                <button onClick={() => handleDelete(item._id)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <i className="ri-delete-bin-line"></i>
+                </button>
               </td>
             </tr>
           ))}

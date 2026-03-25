@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 interface DashboardProps {
@@ -6,6 +7,8 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
+  const { t } = useTranslation();
+
   // Расходы по категориям
   const expenseByCategory = transactions
     .filter(t => t.type === 'expense')
@@ -21,7 +24,7 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
     }, [])
     .sort((a, b) => b.value - a.value);
 
-  // Динамика по месяцам (доходы и расходы)
+  // Динамика по месяцам
   const monthlyData = transactions.reduce((acc: any[], t) => {
     const date = new Date(t.date);
     const month = date.toLocaleString('default', { month: 'short', year: 'numeric' });
@@ -43,10 +46,10 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
 
   return (
     <div style={{ marginTop: '30px' }}>
-      <h2>Дашборд</h2>
+      <h2>{t('dashboard')}</h2>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px' }}>
         <div style={{ flex: 1, minWidth: '300px' }}>
-          <h3>Расходы по категориям</h3>
+          <h3>{t('expenseByCategory')}</h3>
           {expenseByCategory.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
@@ -69,12 +72,12 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <p>Нет данных о расходах</p>
+            <p>{t('noExpenseData')}</p>
           )}
         </div>
 
         <div style={{ flex: 2, minWidth: '400px' }}>
-          <h3>Динамика доходов и расходов</h3>
+          <h3>{t('incomeExpenseDynamics')}</h3>
           {monthlyData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={monthlyData}>
@@ -83,12 +86,12 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions }) => {
                 <YAxis />
                 <Tooltip formatter={(value: any) => `${value?.toFixed(2)} ₽`} />
                 <Legend />
-                <Line type="monotone" dataKey="income" stroke="#2e7d32" name="Доходы" />
-                <Line type="monotone" dataKey="expense" stroke="#c62828" name="Расходы" />
+                <Line type="monotone" dataKey="income" stroke="#2e7d32" name={t('income')} />
+                <Line type="monotone" dataKey="expense" stroke="#c62828" name={t('expense')} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <p>Нет данных за периоды</p>
+            <p>{t('noMonthlyData')}</p>
           )}
         </div>
       </div>

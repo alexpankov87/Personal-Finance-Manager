@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
+import { useTranslation } from 'react-i18next';
 import { fetchCategories, createCategory, fetchTransactions, createTransaction, deleteTransaction } from './services/api';
 import Dashboard from './Dashboard';
 import RecurringManager from './RecurringManager';
 import Papa from 'papaparse';
-
 
 interface Category {
   _id: string;
@@ -24,6 +24,11 @@ interface Transaction {
 }
 
 function App() {
+  const { t, i18n } = useTranslation();
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [newCatName, setNewCatName] = useState('');
@@ -43,12 +48,12 @@ function App() {
     fetch('http://localhost:5000/api/health')
       .then(res => res.json())
       .then(data => setMessage(data.message))
-      .catch(() => setMessage('Ошибка соединения с сервером'));
+      .catch(() => setMessage(t('serverError')));
 
     loadCategories();
     loadTransactions();
     loadForecast();
-  }, []);
+  }, [t]);
 
   const loadForecast = async () => {
     try {
@@ -92,7 +97,7 @@ function App() {
   const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTransaction.category) {
-      alert('Выберите категорию');
+      alert(t('selectCategory'));
       return;
     }
     try {
@@ -118,7 +123,7 @@ function App() {
   };
 
   const handleDeleteTransaction = async (id: string) => {
-    if (window.confirm('Удалить транзакцию?')) {
+    if (window.confirm(t('deleteConfirm'))) {
       try {
         await deleteTransaction(id);
         loadTransactions();
@@ -128,13 +133,12 @@ function App() {
     }
   };
 
-  // Экспорт в CSV
   const exportToCSV = () => {
-    const data = transactions.map(t => ({
-      Дата: new Date(t.date).toLocaleDateString(),
-      Категория: t.category.name,
-      Описание: t.description || '',
-      Сумма: `${t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}`,
+    const data = transactions.map(tx => ({
+      [t('date')]: new Date(tx.date).toLocaleDateString(),
+      [t('category')]: tx.category.name,
+      [t('description')]: tx.description || '',
+      [t('amount')]: `${tx.type === 'income' ? '+' : '-'}${tx.amount.toFixed(2)} ₽`,
     }));
     const csv = Papa.unparse(data, { delimiter: ';' });
     const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -148,27 +152,26 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
-  // Экспорт в PDF
-    const exportToPDF = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/export/pdf', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transactions }),
-        });
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'transactions.pdf');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error('Failed to export PDF', error);
-      }
-    };
+  const exportToPDF = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/export/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transactions }),
+      });
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'transactions.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export PDF', error);
+    }
+  };
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')
@@ -180,21 +183,25 @@ function App() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1>Personal Finance Manager</h1>
-      <p>Server says: {message}</p>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginBottom: '10px' }}>
+        <button onClick={() => changeLanguage('ru')}>🇷🇺 Русский</button>
+        <button onClick={() => changeLanguage('en')}>🇬🇧 English</button>
+        <button onClick={() => changeLanguage('kk')}>🇰🇿 Қазақша</button>
+      </div>
+      <h1>{t('title')}</h1>
+      <p>{t('serverStatus')} {message}</p>
 
-      {/* Баланс */}
       <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
         <div style={{ backgroundColor: '#e8f5e9', padding: '15px', borderRadius: '8px', flex: 1 }}>
-          <h3>Доходы</h3>
+          <h3>{t('income')}</h3>
           <p style={{ fontSize: '24px', color: '#2e7d32' }}>+{totalIncome.toFixed(2)} ₽</p>
         </div>
         <div style={{ backgroundColor: '#ffebee', padding: '15px', borderRadius: '8px', flex: 1 }}>
-          <h3>Расходы</h3>
+          <h3>{t('expense')}</h3>
           <p style={{ fontSize: '24px', color: '#c62828' }}>-{totalExpense.toFixed(2)} ₽</p>
         </div>
         <div style={{ backgroundColor: '#e3f2fd', padding: '15px', borderRadius: '8px', flex: 1 }}>
-          <h3>Баланс</h3>
+          <h3>{t('balance')}</h3>
           <p style={{ fontSize: '24px', color: balance >= 0 ? '#2e7d32' : '#c62828' }}>
             {balance.toFixed(2)} ₽
           </p>
@@ -205,25 +212,25 @@ function App() {
 
       {forecast && (
         <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-          <h2>Прогноз бюджета на следующий месяц</h2>
+          <h2>{t('forecastTitle')}</h2>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
             <div style={{ flex: 1 }}>
-              <h3>Текущий месяц (среднее за 3 мес)</h3>
-              <p>Доходы: {forecast.averageMonthly.income.toFixed(2)} ₽</p>
-              <p>Расходы: {forecast.averageMonthly.expense.toFixed(2)} ₽</p>
-              <p>Баланс: {(forecast.averageMonthly.income - forecast.averageMonthly.expense).toFixed(2)} ₽</p>
+              <h3>{t('currentMonthAvg')}</h3>
+              <p>{t('income')}: {forecast.averageMonthly.income.toFixed(2)} ₽</p>
+              <p>{t('expense')}: {forecast.averageMonthly.expense.toFixed(2)} ₽</p>
+              <p>{t('balance')}: {(forecast.averageMonthly.income - forecast.averageMonthly.expense).toFixed(2)} ₽</p>
             </div>
             <div style={{ flex: 1 }}>
-              <h3>Повторяющиеся операции в следующем месяце</h3>
-              <p>Доходы: +{forecast.recurringNextMonth.income.toFixed(2)} ₽</p>
-              <p>Расходы: -{forecast.recurringNextMonth.expense.toFixed(2)} ₽</p>
+              <h3>{t('recurringNextMonth')}</h3>
+              <p>{t('income')}: +{forecast.recurringNextMonth.income.toFixed(2)} ₽</p>
+              <p>{t('expense')}: -{forecast.recurringNextMonth.expense.toFixed(2)} ₽</p>
             </div>
             <div style={{ flex: 1 }}>
-              <h3>Прогноз (с учётом инфляции +5%)</h3>
-              <p>Доходы: {forecast.forecastNextMonth.income.toFixed(2)} ₽</p>
-              <p>Расходы: {forecast.forecastNextMonth.expense.toFixed(2)} ₽</p>
+              <h3>{t('forecastWithInflation')}</h3>
+              <p>{t('income')}: {forecast.forecastNextMonth.income.toFixed(2)} ₽</p>
+              <p>{t('expense')}: {forecast.forecastNextMonth.expense.toFixed(2)} ₽</p>
               <p style={{ fontWeight: 'bold', color: (forecast.forecastNextMonth.income - forecast.forecastNextMonth.expense) >= 0 ? '#2e7d32' : '#c62828' }}>
-                Ожидаемый баланс: {(forecast.forecastNextMonth.income - forecast.forecastNextMonth.expense).toFixed(2)} ₽
+                {t('expectedBalance')}: {(forecast.forecastNextMonth.income - forecast.forecastNextMonth.expense).toFixed(2)} ₽
               </p>
             </div>
           </div>
@@ -233,20 +240,19 @@ function App() {
       <RecurringManager categories={categories} />
 
       <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
-        {/* Левая колонка: категории */}
         <div style={{ flex: 1, minWidth: '250px' }}>
-          <h2>Категории</h2>
+          <h2>{t('categories')}</h2>
           <form onSubmit={handleAddCategory} style={{ marginBottom: '20px' }}>
             <input
               value={newCatName}
               onChange={e => setNewCatName(e.target.value)}
-              placeholder="Название"
+              placeholder={t('categoryName')}
               required
               style={{ marginRight: '8px' }}
             />
             <select value={newCatType} onChange={e => setNewCatType(e.target.value as any)}>
-              <option value="expense">Расход</option>
-              <option value="income">Доход</option>
+              <option value="expense">{t('expenseType')}</option>
+              <option value="income">{t('incomeType')}</option>
             </select>
             <input
               type="color"
@@ -254,28 +260,27 @@ function App() {
               onChange={e => setNewCatColor(e.target.value)}
               style={{ marginLeft: '8px' }}
             />
-            <button type="submit">Добавить</button>
+            <button type="submit">{t('addCategory')}</button>
           </form>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {categories.map(cat => (
               <li key={cat._id} style={{ marginBottom: '8px' }}>
                 <i className={`ri-${cat.icon}`} style={{ marginRight: '8px' }}></i>
-                {cat.name} ({cat.type === 'expense' ? 'расход' : 'доход'})
+                {cat.name} ({cat.type === 'expense' ? t('expenseType') : t('incomeType')})
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Правая колонка: транзакции */}
         <div style={{ flex: 2, minWidth: '400px' }}>
-          <h2>Добавить транзакцию</h2>
+          <h2>{t('addTransaction')}</h2>
           <form onSubmit={handleAddTransaction} style={{ marginBottom: '30px' }}>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <input
                 type="number"
                 value={newTransaction.amount}
                 onChange={e => setNewTransaction({ ...newTransaction, amount: e.target.value })}
-                placeholder="Сумма"
+                placeholder={t('amount')}
                 required
                 step="0.01"
               />
@@ -283,15 +288,15 @@ function App() {
                 value={newTransaction.type}
                 onChange={e => setNewTransaction({ ...newTransaction, type: e.target.value as any })}
               >
-                <option value="expense">Расход</option>
-                <option value="income">Доход</option>
+                <option value="expense">{t('expenseType')}</option>
+                <option value="income">{t('incomeType')}</option>
               </select>
               <select
                 value={newTransaction.category}
                 onChange={e => setNewTransaction({ ...newTransaction, category: e.target.value })}
                 required
               >
-                <option value="">Выберите категорию</option>
+                <option value="">{t('selectCategory')}</option>
                 {categories.map(cat => (
                   <option key={cat._id} value={cat._id}>
                     {cat.name}
@@ -308,20 +313,20 @@ function App() {
                 type="text"
                 value={newTransaction.description}
                 onChange={e => setNewTransaction({ ...newTransaction, description: e.target.value })}
-                placeholder="Описание (необязательно)"
+                placeholder={t('description')}
               />
-              <button type="submit">Добавить</button>
+              <button type="submit">{t('addTransaction')}</button>
             </div>
           </form>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <h2>Список транзакций</h2>
+            <h2>{t('transactionList')}</h2>
             <div>
               <button onClick={exportToCSV} style={{ marginRight: '10px', padding: '5px 10px', cursor: 'pointer' }}>
-                Экспорт CSV
+                {t('exportCSV')}
               </button>
               <button onClick={exportToPDF} style={{ padding: '5px 10px', cursor: 'pointer' }}>
-                Экспорт PDF
+                {t('exportPDF')}
               </button>
             </div>
           </div>
@@ -329,27 +334,27 @@ function App() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #ccc' }}>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Дата</th>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Категория</th>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Описание</th>
-                <th style={{ textAlign: 'right', padding: '8px' }}>Сумма</th>
+                <th style={{ textAlign: 'left', padding: '8px' }}>{t('date')}</th>
+                <th style={{ textAlign: 'left', padding: '8px' }}>{t('category')}</th>
+                <th style={{ textAlign: 'left', padding: '8px' }}>{t('description')}</th>
+                <th style={{ textAlign: 'right', padding: '8px' }}>{t('amount')}</th>
                 <th style={{ width: '50px' }}></th>
                </tr>
             </thead>
             <tbody>
-              {transactions.map(t => (
-                <tr key={t._id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '8px' }}>{new Date(t.date).toLocaleDateString()}</td>
+              {transactions.map(tx => (
+                <tr key={tx._id} style={{ borderBottom: '1px solid #eee' }}>
+                  <td style={{ padding: '8px' }}>{new Date(tx.date).toLocaleDateString()}</td>
                   <td style={{ padding: '8px' }}>
-                    <i className={`ri-${t.category.icon}`} style={{ marginRight: '4px' }}></i>
-                    {t.category.name}
+                    <i className={`ri-${tx.category.icon}`} style={{ marginRight: '4px' }}></i>
+                    {tx.category.name}
                   </td>
-                  <td style={{ padding: '8px' }}>{t.description || '-'}</td>
-                  <td style={{ padding: '8px', textAlign: 'right', color: t.type === 'income' ? '#2e7d32' : '#c62828' }}>
-                    {t.type === 'income' ? '+' : '-'}{t.amount.toFixed(2)} ₽
+                  <td style={{ padding: '8px' }}>{tx.description || '-'}</td>
+                  <td style={{ padding: '8px', textAlign: 'right', color: tx.type === 'income' ? '#2e7d32' : '#c62828' }}>
+                    {tx.type === 'income' ? '+' : '-'}{tx.amount.toFixed(2)} ₽
                   </td>
                   <td style={{ padding: '8px', textAlign: 'center' }}>
-                    <button onClick={() => handleDeleteTransaction(t._id)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <button onClick={() => handleDeleteTransaction(tx._id)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
                       <i className="ri-delete-bin-line"></i>
                     </button>
                   </td>
