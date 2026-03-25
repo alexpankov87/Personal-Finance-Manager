@@ -227,7 +227,7 @@ function App() {
 
       <Dashboard transactions={transactions} />
 
-      {forecast && (
+      {forecast && forecast.averageMonthly && (
         <div className="card forecast-card">
           <h2>{t('forecastTitle')}</h2>
           <div className="forecast-stats">
