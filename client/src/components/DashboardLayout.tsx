@@ -284,7 +284,7 @@ function DashboardLayout() {
           <ul className="category-list">
             {categories.map(cat => (
               <li key={cat._id} className="category-item">
-                <i className={`ri-${cat.icon}`} style={{ marginRight: '8px' }}></i>
+                <i className={`ri-${cat.icon}`} style={{ marginRight: '8px', fontSize: '24px' }}></i>
                 {cat.name} ({cat.type === 'expense' ? t('expenseType') : t('incomeType')})
               </li>
             ))}
