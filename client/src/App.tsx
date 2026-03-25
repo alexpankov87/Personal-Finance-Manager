@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import { useTranslation } from 'react-i18next';
-import { fetchCategories, createCategory, fetchTransactions, createTransaction, deleteTransaction } from './services/api';
+import { fetchCategories, createCategory, fetchTransactions, createTransaction, deleteTransaction,  fetchMockBankTransactions, importBankTransactions } from './services/api';
 import Dashboard from './Dashboard';
 import RecurringManager from './RecurringManager';
 import Papa from 'papaparse';
@@ -150,6 +150,18 @@ function App() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+    const importFromBank = async () => {
+    try {
+      const mockTransactions = await fetchMockBankTransactions();
+      const result = await importBankTransactions(mockTransactions);
+      alert(`Импортировано ${result.transactions.length} транзакций`);
+      loadTransactions(); // обновить список транзакций
+    } catch (error) {
+      console.error('Import failed', error);
+      alert('Ошибка импорта');
+    }
   };
 
   const exportToPDF = async () => {
@@ -322,6 +334,9 @@ function App() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <h2>{t('transactionList')}</h2>
             <div>
+              <button onClick={importFromBank} style={{ marginRight: '10px', padding: '5px 10px', cursor: 'pointer' }}>
+                Импорт из банка (мок)
+              </button>
               <button onClick={exportToCSV} style={{ marginRight: '10px', padding: '5px 10px', cursor: 'pointer' }}>
                 {t('exportCSV')}
               </button>

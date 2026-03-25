@@ -78,3 +78,19 @@ export const deleteRecurring = async (id: string) => {
   if (!res.ok) throw new Error('Failed to delete recurring');
   return res.json();
 };
+
+export const fetchMockBankTransactions = async () => {
+  const res = await fetch(`${API_BASE}/bank/mock`);
+  if (!res.ok) throw new Error('Failed to fetch mock bank transactions');
+  return res.json();
+};
+
+export const importBankTransactions = async (transactions: any[]) => {
+  const res = await fetch(`${API_BASE}/bank/import`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ transactions }),
+  });
+  if (!res.ok) throw new Error('Failed to import bank transactions');
+  return res.json();
+};
