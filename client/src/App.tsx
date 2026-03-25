@@ -47,7 +47,7 @@ function App() {
   const [forecast, setForecast] = useState<any>(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/health')
+    fetch('http://localhost:5001/api/health')
       .then(res => res.json())
       .then(data => setMessage(data.message))
       .catch(() => setMessage(t('serverError')));
@@ -59,7 +59,7 @@ function App() {
 
   const loadForecast = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/forecast?months=3&inflation=0.05');
+      const res = await fetch('http://localhost:5001/api/forecast?months=3&inflation=0.05');
       const data = await res.json();
       setForecast(data);
     } catch (error) {
@@ -168,7 +168,7 @@ function App() {
 
   const exportToPDF = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/export/pdf', {
+      const response = await fetch('http://localhost:5001/api/export/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transactions }),
