@@ -117,125 +117,115 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
   };
 
   return (
-    <div style={{ marginTop: '30px', borderTop: '1px solid #ccc', paddingTop: '20px' }}>
+    <div className="recurring-manager">
       <h2>{t('recurringOperations')}</h2>
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+      <form onSubmit={handleSubmit} className="form-group">
+        <input
+          type="number"
+          placeholder={t('amount')}
+          value={form.amount}
+          onChange={e => setForm({ ...form, amount: e.target.value })}
+          required
+          step="0.01"
+        />
+        <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as any })}>
+          <option value="expense">{t('expenseType')}</option>
+          <option value="income">{t('incomeType')}</option>
+        </select>
+        <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} required>
+          <option value="">{t('selectCategory')}</option>
+          {categories.filter(c => c.type === form.type).map(cat => (
+            <option key={cat._id} value={cat._id}>{cat.name}</option>
+          ))}
+        </select>
+        <input
+          type="text"
+          placeholder={t('description')}
+          value={form.description}
+          onChange={e => setForm({ ...form, description: e.target.value })}
+        />
+        <select value={form.period} onChange={e => setForm({ ...form, period: e.target.value as any })}>
+          <option value="daily">{t('daily')}</option>
+          <option value="weekly">{t('weekly')}</option>
+          <option value="monthly">{t('monthly')}</option>
+        </select>
+        <input
+          type="date"
+          value={form.nextRun}
+          onChange={e => setForm({ ...form, nextRun: e.target.value })}
+          required
+        />
+        <label>
           <input
-            type="number"
-            placeholder={t('amount')}
-            value={form.amount}
-            onChange={e => setForm({ ...form, amount: e.target.value })}
-            required
-            step="0.01"
+            type="checkbox"
+            checked={form.active}
+            onChange={e => setForm({ ...form, active: e.target.checked })}
           />
-          <select
-            value={form.type}
-            onChange={e => setForm({ ...form, type: e.target.value as any })}
-          >
-            <option value="expense">{t('expenseType')}</option>
-            <option value="income">{t('incomeType')}</option>
-          </select>
-          <select
-            value={form.category}
-            onChange={e => setForm({ ...form, category: e.target.value })}
-            required
-          >
-            <option value="">{t('selectCategory')}</option>
-            {categories.filter(c => c.type === form.type).map(cat => (
-              <option key={cat._id} value={cat._id}>{cat.name}</option>
-            ))}
-          </select>
-          <input
-            type="text"
-            placeholder={t('description')}
-            value={form.description}
-            onChange={e => setForm({ ...form, description: e.target.value })}
-          />
-          <select
-            value={form.period}
-            onChange={e => setForm({ ...form, period: e.target.value as any })}
-          >
-            <option value="daily">{t('daily')}</option>
-            <option value="weekly">{t('weekly')}</option>
-            <option value="monthly">{t('monthly')}</option>
-          </select>
-          <input
-            type="date"
-            value={form.nextRun}
-            onChange={e => setForm({ ...form, nextRun: e.target.value })}
-            required
-          />
-          <label>
-            <input
-              type="checkbox"
-              checked={form.active}
-              onChange={e => setForm({ ...form, active: e.target.checked })}
-            />
-            {t('active')}
-          </label>
-          <button type="submit">{editingId ? t('save') : t('add')}</button>
-          {editingId && (
-            <button type="button" onClick={() => {
-              setEditingId(null);
-              setForm({
-                amount: '',
-                type: 'expense',
-                category: '',
-                description: '',
-                period: 'monthly',
-                nextRun: new Date().toISOString().slice(0, 10),
-                active: true,
-              });
-            }}>{t('cancel')}</button>
-          )}
-        </div>
+          {t('active')}
+        </label>
+        <button type="submit">{editingId ? t('save') : t('add')}</button>
+        {editingId && (
+          <button type="button" onClick={() => {
+            setEditingId(null);
+            setForm({
+              amount: '',
+              type: 'expense',
+              category: '',
+              description: '',
+              period: 'monthly',
+              nextRun: new Date().toISOString().slice(0, 10),
+              active: true,
+            });
+          }}>{t('cancel')}</button>
+        )}
       </form>
 
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid #ccc' }}>
-            <th style={{ textAlign: 'left', padding: '8px' }}>{t('amount')}</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>{t('category')}</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>{t('description')}</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>{t('period')}</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>{t('nextRun')}</th>
-            <th style={{ textAlign: 'left', padding: '8px' }}>{t('status')}</th>
-            <th style={{ width: '100px' }}></th>
-           </tr>
-        </thead>
-        <tbody>
-          {recurringList.map(item => (
-            <tr key={item._id} style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '8px', color: item.type === 'income' ? '#2e7d32' : '#c62828' }}>
-                {item.type === 'income' ? '+' : '-'}{item.amount.toFixed(2)} ₽
-              </td>
-              <td style={{ padding: '8px' }}>{item.category.name}</td>
-              <td style={{ padding: '8px' }}>{item.description || '-'}</td>
-              <td style={{ padding: '8px' }}>
-                {item.period === 'daily' && t('daily')}
-                {item.period === 'weekly' && t('weekly')}
-                {item.period === 'monthly' && t('monthly')}
-              </td>
-              <td style={{ padding: '8px' }}>{new Date(item.nextRun).toLocaleDateString()}</td>
-              <td style={{ padding: '8px' }}>
-                <button onClick={() => toggleActive(item)}>
-                  {item.active ? t('active') : t('inactive')}
-                </button>
-              </td>
-              <td style={{ padding: '8px' }}>
-                <button onClick={() => handleEdit(item)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                  <i className="ri-edit-line"></i>
-                </button>
-                <button onClick={() => handleDelete(item._id)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                  <i className="ri-delete-bin-line"></i>
-                </button>
-              </td>
+      <div className="recurring-table">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('amount')}</th>
+              <th>{t('category')}</th>
+              <th>{t('description')}</th>
+              <th>{t('period')}</th>
+              <th>{t('nextRun')}</th>
+              <th>{t('status')}</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {recurringList.map(item => (
+              <tr key={item._id}>
+                <td className={item.type === 'income' ? 'income-text' : 'expense-text'}>
+                  {item.type === 'income' ? '+' : '-'}{item.amount.toFixed(2)} ₽
+                </td>
+                <td>{item.category.name}</td>
+                <td>{item.description || '-'}</td>
+                <td>
+                  {item.period === 'daily' && t('daily')}
+                  {item.period === 'weekly' && t('weekly')}
+                  {item.period === 'monthly' && t('monthly')}
+                </td>
+                <td>{new Date(item.nextRun).toLocaleDateString()}</td>
+                <td>
+                  <button onClick={() => toggleActive(item)}>
+                    {item.active ? t('active') : t('inactive')}
+                  </button>
+                </td>
+                <td>
+                  <button onClick={() => handleEdit(item)} className="icon-button">
+                    <i className="ri-edit-line"></i>
+                  </button>
+                  <button onClick={() => handleDelete(item._id)} className="icon-button">
+                    <i className="ri-delete-bin-line"></i>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

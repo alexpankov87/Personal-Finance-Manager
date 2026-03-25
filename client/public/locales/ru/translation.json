@@ -37,5 +37,10 @@
   "expectedBalance": "Ожидаемый баланс",
   "serverError": "Ошибка соединения с сервером",
   "deleteConfirm": "Удалить транзакцию?",
-  "category": "Категория"
+  "category": "Категория",
+  "dashboard": "Дашборд",
+  "expenseByCategory": "Расходы по категориям",
+  "incomeExpenseDynamics": "Динамика доходов и расходов",
+  "noExpenseData": "Нет данных о расходах",
+  "noMonthlyData": "Нет данных за периоды"
 }

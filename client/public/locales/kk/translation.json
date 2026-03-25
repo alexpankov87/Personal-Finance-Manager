@@ -37,5 +37,10 @@
   "expectedBalance": "Күтілетін баланс",
   "category": "Санат",
   "serverError": "Серверге қосылу қатесі",
-  "deleteConfirm": "Транзакцияны жою?"
+  "deleteConfirm": "Транзакцияны жою?",
+  "dashboard": "Дашборд",
+  "expenseByCategory": "Санаттар бойынша шығындар",
+  "incomeExpenseDynamics": "Кіріс пен шығын динамикасы",
+  "noExpenseData": "Шығындар туралы дерек жоқ",
+  "noMonthlyData": "Кезеңдер бойынша дерек жоқ"
 }

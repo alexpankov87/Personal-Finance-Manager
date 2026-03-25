@@ -36,5 +36,10 @@
   "forecastWithInflation": "Forecast (with +5% inflation)",
   "expectedBalance": "Expected balance",
   "serverError": "Server connection error",
-  "deleteConfirm": "Delete transaction?"
+  "deleteConfirm": "Delete transaction?",
+  "dashboard": "Dashboard",
+  "expenseByCategory": "Expenses by category",
+  "incomeExpenseDynamics": "Income and expense dynamics",
+  "noExpenseData": "No expense data",
+  "noMonthlyData": "No monthly data"
 }
