@@ -32,8 +32,15 @@ router.get('/', async (req, res) => {
     });
 
     const monthsArray = Object.keys(monthlyTotals).sort();
+
+    // Если нет данных — возвращаем нули
     if (monthsArray.length === 0) {
-      return res.json({ income: 0, expense: 0, nextMonth: null });
+      return res.json({
+        currentMonth: { income: 0, expense: 0 },
+        averageMonthly: { income: 0, expense: 0 },
+        recurringNextMonth: { income: 0, expense: 0 },
+        forecastNextMonth: { income: 0, expense: 0 }
+      });
     }
 
     let totalIncome = 0;
@@ -64,10 +71,10 @@ router.get('/', async (req, res) => {
     const forecastIncome = avgIncome * (1 + inflation) + recurringIncome;
     const forecastExpense = avgExpense * (1 + inflation) + recurringExpense;
 
+    // Безопасно получаем последний месяц
     const lastMonthKey = monthsArray[monthsArray.length - 1];
-    // Безопасное получение данных последнего месяца
-    const lastMonthData = (lastMonthKey && monthlyTotals[lastMonthKey]) 
-      ? monthlyTotals[lastMonthKey] 
+    const lastMonthData = lastMonthKey && monthlyTotals[lastMonthKey]
+      ? monthlyTotals[lastMonthKey]
       : { income: 0, expense: 0 };
 
     res.json({
