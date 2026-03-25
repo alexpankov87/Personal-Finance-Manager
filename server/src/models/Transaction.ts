@@ -6,7 +6,7 @@ export interface ITransaction extends Document {
   category: mongoose.Types.ObjectId;
   date: Date;
   description?: string;
-  user?: mongoose.Types.ObjectId; // пока не используем
+  user: mongoose.Types.ObjectId;
 }
 
 const TransactionSchema = new Schema<ITransaction>({
@@ -15,7 +15,7 @@ const TransactionSchema = new Schema<ITransaction>({
   category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
   date: { type: Date, required: true, default: Date.now },
   description: { type: String },
-  user: { type: Schema.Types.ObjectId, ref: 'User' }
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 
 export default mongoose.model<ITransaction>('Transaction', TransactionSchema);
