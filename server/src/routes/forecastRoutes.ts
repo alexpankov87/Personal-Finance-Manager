@@ -32,15 +32,8 @@ router.get('/', async (req, res) => {
     });
 
     const monthsArray = Object.keys(monthlyTotals).sort();
-
-    // Если нет данных — возвращаем нули
     if (monthsArray.length === 0) {
-      return res.json({
-        currentMonth: { income: 0, expense: 0 },
-        averageMonthly: { income: 0, expense: 0 },
-        recurringNextMonth: { income: 0, expense: 0 },
-        forecastNextMonth: { income: 0, expense: 0 }
-      });
+      return res.json({ income: 0, expense: 0, nextMonth: null });
     }
 
     let totalIncome = 0;
@@ -73,16 +66,9 @@ router.get('/', async (req, res) => {
 
     const lastMonthKey = monthsArray[monthsArray.length - 1];
     // Безопасное получение данных последнего месяца
-    if (!lastMonthKey) {
-      // Этого не должно случиться, но TypeScript требует проверки
-      return res.json({
-        currentMonth: { income: 0, expense: 0 },
-        averageMonthly: { income: avgIncome, expense: avgExpense },
-        recurringNextMonth: { income: recurringIncome, expense: recurringExpense },
-        forecastNextMonth: { income: forecastIncome, expense: forecastExpense },
-      });
-    }
-    const lastMonthData = monthlyTotals[lastMonthKey] ?? { income: 0, expense: 0 };
+    const lastMonthData = (lastMonthKey && monthlyTotals[lastMonthKey]) 
+      ? monthlyTotals[lastMonthKey] 
+      : { income: 0, expense: 0 };
 
     res.json({
       currentMonth: {
