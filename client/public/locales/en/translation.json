@@ -42,5 +42,6 @@
   "expenseByCategory": "Expenses by category",
   "incomeExpenseDynamics": "Income and expense dynamics",
   "noExpenseData": "No expense data",
-  "noMonthlyData": "No monthly data"
+  "noMonthlyData": "No monthly data",
+  "logout": "Exit"
 }

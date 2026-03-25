@@ -43,5 +43,6 @@
   "expenseByCategory": "Расходы по категориям",
   "incomeExpenseDynamics": "Динамика доходов и расходов",
   "noExpenseData": "Нет данных о расходах",
-  "noMonthlyData": "Нет данных за периоды"
+  "noMonthlyData": "Нет данных за периоды",
+  "logout": "Выйти"
 }

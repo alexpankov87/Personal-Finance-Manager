@@ -11,6 +11,8 @@ import { processRecurringTransactions } from './cron/recurringJobs';
 import forecastRoutes from './routes/forecastRoutes';
 import exportRoutes from './routes/exportRoutes';
 import bankRoutes from './routes/bankRoutes';
+import authRoutes from './routes/authRoutes';
+
 
 dotenv.config();
 connectDB().then(() => {
@@ -38,6 +40,8 @@ app.use('/api/recurring', recurringRoutes);
 app.use('/api/forecast', forecastRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/bank', bankRoutes);
+app.use('/api/auth', authRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

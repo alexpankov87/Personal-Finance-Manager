@@ -43,5 +43,6 @@
   "expenseByCategory": "Санаттар бойынша шығындар",
   "incomeExpenseDynamics": "Кіріс пен шығын динамикасы",
   "noExpenseData": "Шығындар туралы дерек жоқ",
-  "noMonthlyData": "Кезеңдер бойынша дерек жоқ"
+  "noMonthlyData": "Кезеңдер бойынша дерек жоқ",
+  "logout": "Шығу"
 }

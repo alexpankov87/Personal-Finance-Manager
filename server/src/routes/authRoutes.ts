@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
-import Category from '../models/Category';
+// Пока не добавляем Category – позже
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -17,15 +17,7 @@ router.post('/register', async (req, res) => {
     const user = new User({ email, passwordHash, name });
     await user.save();
 
-    // Создаём стандартные категории для нового пользователя
-    const defaultCategories = [
-      { name: 'Продукты', type: 'expense', color: '#6B7280', icon: 'restaurant-line', user: user._id },
-      { name: 'Транспорт', type: 'expense', color: '#6B7280', icon: 'car-line', user: user._id },
-      { name: 'Развлечения', type: 'expense', color: '#6B7280', icon: 'gamepad-line', user: user._id },
-      { name: 'Зарплата', type: 'income', color: '#6B7280', icon: 'money-cny-box-line', user: user._id },
-      { name: 'Подработка', type: 'income', color: '#6B7280', icon: 'briefcase-line', user: user._id },
-    ];
-    await Category.insertMany(defaultCategories);
+    // Пока не создаём категории – добавим позже, когда свяжем с пользователем
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
     res.status(201).json({ token, user: { id: user._id, email, name } });
@@ -50,6 +42,11 @@ router.post('/login', async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
+});
+
+// Временный тестовый маршрут (удалим позже)
+router.get('/test', (req, res) => {
+  res.json({ message: 'Auth route works' });
 });
 
 export default router;
