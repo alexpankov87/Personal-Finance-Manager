@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { fetchForecast } from '../services/api';
 import type { ForecastData } from '../types';
 
@@ -36,6 +36,11 @@ export const useForecast = (initialMonths = 3, initialInflation = 0.05, initialP
     setPeriod(newPeriod);
     loadForecast(initialMonths, initialInflation, newPeriod);
   }, [initialMonths, initialInflation, loadForecast]);
+
+  // Загружаем данные при первом рендере
+  useEffect(() => {
+    loadForecast(initialMonths, initialInflation, initialPeriod);
+  }, []); // Пустой массив зависимостей — только при монтировании
 
   return {
     forecast,
