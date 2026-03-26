@@ -388,8 +388,14 @@ function DashboardLayout() {
                   <tr key={tx._id}>
                     <td style={{ padding: '8px' }}>{new Date(tx.date).toLocaleDateString()}</td>
                     <td style={{ padding: '8px' }}>
-                      <i className={`ri-${tx.category.icon}`} style={{ marginRight: '4px' }}></i>
-                      {tx.category.name}
+                      {tx.category ? (
+                        <>
+                          <i className={`ri-${tx.category.icon}`} style={{ marginRight: '4px' }}></i>
+                          {tx.category.name}
+                        </>
+                      ) : (
+                        <span style={{ color: 'red' }}>Категория удалена</span>
+                      )}
                     </td>
                     <td style={{ padding: '8px' }}>{tx.description || '-'}</td>
                     <td style={{ padding: '8px', textAlign: 'right', color: tx.type === 'income' ? 'var(--income-color)' : 'var(--expense-color)' }}>
