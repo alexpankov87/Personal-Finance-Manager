@@ -140,9 +140,13 @@ cp .env.example .env
 npm run dev
 
 3. Настройка клиента
+
 cd client
+
 npm install
+
 npm run dev
+
 Приложение будет доступно по адресу http://localhost:5173
 
 🔌 API Эндпоинты
