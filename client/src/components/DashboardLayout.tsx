@@ -49,6 +49,7 @@ function DashboardLayout() {
   });
   const [message, setMessage] = useState('');
   const [forecast, setForecast] = useState<any>(null);
+  const [period, setPeriod] = useState('month');
 
   useEffect(() => {
     fetch('http://localhost:5001/api/health')
@@ -59,11 +60,11 @@ function DashboardLayout() {
     loadCategories();
     loadTransactions();
     loadForecast();
-  }, [t]);
+  }, [t, period]);
 
     const loadForecast = async () => {
     try {
-      const data = await fetchForecast();
+      const data = await fetchForecast(3, 0.05, period); 
       setForecast(data);
     } catch (error) {
       console.error('Failed to load forecast', error);
@@ -235,7 +236,12 @@ const exportToPDF = async () => {
         </div>
       </div>
 
-      <Dashboard transactions={transactions} />
+      <Dashboard
+        transactions={transactions}
+        monthlyData={forecast?.monthlyData || []}
+        period={period}
+        onPeriodChange={setPeriod}
+      />
 
       {forecast && (
         <div className="card forecast-card">

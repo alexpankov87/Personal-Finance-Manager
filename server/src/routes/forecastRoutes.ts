@@ -5,7 +5,6 @@ import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 
-// Все запросы к прогнозу требуют авторизации
 router.use(authMiddleware);
 
 router.get('/', async (req: AuthRequest, res) => {
@@ -15,10 +14,24 @@ router.get('/', async (req: AuthRequest, res) => {
 
     const months = parseInt(req.query.months as string) || 3;
     const inflation = parseFloat(req.query.inflation as string) || 0.05;
+    const period = (req.query.period as string) || 'month'; // month, quarter, year
 
     const now = new Date();
-    const startDate = new Date(now);
-    startDate.setMonth(now.getMonth() - months);
+    let startDate: Date;
+    
+    switch (period) {
+      case 'quarter':
+        startDate = new Date(now);
+        startDate.setMonth(now.getMonth() - 3);
+        break;
+      case 'year':
+        startDate = new Date(now);
+        startDate.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        startDate = new Date(now);
+        startDate.setMonth(now.getMonth() - months);
+    }
 
     const transactions = await Transaction.find({
       user: userId,
@@ -46,7 +59,8 @@ router.get('/', async (req: AuthRequest, res) => {
         currentMonth: { income: 0, expense: 0 },
         averageMonthly: { income: 0, expense: 0 },
         recurringNextMonth: { income: 0, expense: 0 },
-        forecastNextMonth: { income: 0, expense: 0 }
+        forecastNextMonth: { income: 0, expense: 0 },
+        monthlyData: []
       });
     }
 
@@ -84,6 +98,13 @@ router.get('/', async (req: AuthRequest, res) => {
       ? monthlyTotals[lastMonthKey]
       : { income: 0, expense: 0 };
 
+    // Подготовка данных для барчарта
+    const monthlyData = monthsArray.map(month => ({
+      month,
+      income: monthlyTotals[month]?.income ?? 0,
+      expense: monthlyTotals[month]?.expense ?? 0,
+    }));
+
     res.json({
       currentMonth: {
         income: lastMonthData.income,
@@ -92,6 +113,7 @@ router.get('/', async (req: AuthRequest, res) => {
       averageMonthly: { income: avgIncome, expense: avgExpense },
       recurringNextMonth: { income: recurringIncome, expense: recurringExpense },
       forecastNextMonth: { income: forecastIncome, expense: forecastExpense },
+      monthlyData
     });
   } catch (error) {
     console.error(error);

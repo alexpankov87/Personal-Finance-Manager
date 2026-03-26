@@ -44,5 +44,10 @@
   "incomeExpenseDynamics": "Динамика доходов и расходов",
   "noExpenseData": "Нет данных о расходах",
   "noMonthlyData": "Нет данных за периоды",
-  "logout": "Выйти"
+  "logout": "Выйти",
+  "last3months": "Последние 3 месяца",
+  "lastQuarter": "Последний квартал",
+  "lastYear": "Последний год",
+  "comparisonChart": "Сравнение доходов и расходов"
+
 }

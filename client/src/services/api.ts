@@ -111,8 +111,8 @@ export const importBankTransactions = async (transactions: any[]) => {
   return res.json();
 };
 
-export const fetchForecast = async (months = 3, inflation = 0.05) => {
-  const res = await fetch(`${API_BASE}/forecast?months=${months}&inflation=${inflation}`, {
+export const fetchForecast = async (months = 3, inflation = 0.05, period = 'month') => {
+  const res = await fetch(`${API_BASE}/forecast?months=${months}&inflation=${inflation}&period=${period}`, {
     headers: getAuthHeaders(),
   });
   if (!res.ok) throw new Error('Failed to fetch forecast');

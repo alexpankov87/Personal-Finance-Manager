@@ -43,5 +43,9 @@
   "incomeExpenseDynamics": "Income and expense dynamics",
   "noExpenseData": "No expense data",
   "noMonthlyData": "No monthly data",
-  "logout": "Exit"
+  "logout": "Exit",
+  "last3months": "Last 3 months",
+  "lastQuarter": "Last quarter",
+  "lastYear": "Last year",
+  "comparisonChart": "Income vs Expenses Comparison"
 }

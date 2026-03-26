@@ -44,5 +44,9 @@
   "incomeExpenseDynamics": "Кіріс пен шығын динамикасы",
   "noExpenseData": "Шығындар туралы дерек жоқ",
   "noMonthlyData": "Кезеңдер бойынша дерек жоқ",
-  "logout": "Шығу"
+  "logout": "Шығу",
+  "last3months": "Соңғы 3 ай",
+  "lastQuarter": "Соңғы тоқсан",
+  "lastYear": "Соңғы жыл",
+  "comparisonChart": "Кіріс пен шығындарды салыстыру"
 }
