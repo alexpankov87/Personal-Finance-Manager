@@ -37,6 +37,35 @@
     --balance-negative: #ef9a9a;
 }
 
+/* Серая тема */ 
+[data-theme="gray"] {
+    --bg-primary: #f3f4f6;
+    --bg-secondary: #e5e7eb;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --border-color: #d1d5db;
+    --button-hover: #4b5563;
+    --card-bg: #ffffff;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --table-header-bg: #e5e7eb;
+    --table-row-hover: #f9fafb;
+}
+
+/* Синяя тема */
+[data-theme="blue"] {
+    --bg-primary: #eff6ff;
+    --bg-secondary: #dbeafe;
+    --text-primary: #1e3a8a;
+    --text-secondary: #1e40af;
+    --border-color: #bfdbfe;
+    --button-hover: #1d4ed8;
+    --card-bg: #ffffff;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --table-header-bg: #dbeafe;
+    --table-row-hover: #eff6ff;
+}
+
+
 /* Global styles */
 body {
     background-color: var(--bg-primary);

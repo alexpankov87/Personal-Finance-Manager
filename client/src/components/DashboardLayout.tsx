@@ -8,6 +8,7 @@ import Papa from 'papaparse';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { fetchForecast } from '../services/api';
+import ThemeSwitcher from './ThemeSwitcher';
 
 interface Category {
   _id: string;
@@ -40,6 +41,7 @@ function DashboardLayout() {
   const [newCatName, setNewCatName] = useState('');
   const [newCatType, setNewCatType] = useState<'income' | 'expense'>('expense');
   const [newCatColor, setNewCatColor] = useState('#6B7280');
+  const [showThemePanel, setShowThemePanel] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
     amount: '',
     type: 'expense' as 'income' | 'expense',
@@ -206,6 +208,7 @@ const exportToPDF = async () => {
   const balance = totalIncome - totalExpense;
 
   return (
+    
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginBottom: '10px' }}>
         <button onClick={() => changeLanguage('ru')}>🇷🇺 Русский</button>
@@ -213,6 +216,9 @@ const exportToPDF = async () => {
         <button onClick={() => changeLanguage('kk')}>🇰🇿 Қазақша</button>
         <button onClick={toggleTheme}>
           {theme === 'light' ? '🌙' : '☀️'}
+        </button>
+        <button onClick={() => setShowThemePanel(!showThemePanel)}>
+          🎨 Тема
         </button>
          <button onClick={logout}>{t('logout')}</button>
       </div>
@@ -390,6 +396,60 @@ const exportToPDF = async () => {
           </div>
         </div>
       </div>
+       {/* Модальное окно для темы */}
+      {showThemePanel && (
+        <>
+          {/* Затемнение фона */}
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 999,
+              backdropFilter: 'blur(4px)',
+            }}
+            onClick={() => setShowThemePanel(false)}
+          />
+          {/* Модальное окно */}
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: 'var(--bg-primary)',
+              border: `1px solid var(--border-color)`,
+              borderRadius: '12px',
+              padding: '24px',
+              zIndex: 1000,
+              minWidth: '300px',
+              maxWidth: '90vw',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>Настройки темы</h3>
+              <button
+                onClick={() => setShowThemePanel(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)',
+                  padding: '4px 8px',
+                }}
+              >
+                ✖️
+              </button>
+            </div>
+            <ThemeSwitcher />
+          </div>
+        </>
+      )}
     </div>
   );
 }
