@@ -146,21 +146,29 @@ npm run dev
 ### **Аутентификация**
 
 POST	/api/auth/register	Регистрация
+
 POST	/api/auth/login	Вход
+
 GET	/api/auth/me	Получить текущего пользователя
 
 ### **Категории**
 
 GET	/api/categories	Получить все категории пользователя
+
 POST	/api/categories	Создать категорию
+
 PUT	/api/categories/:id	Обновить категорию
+
 DELETE	/api/categories/:id	Удалить категорию (и все её транзакции)
 
 ### **Транзакции**
 
 GET	/api/transactions	Получить все транзакции
+
 POST	/api/transactions	Создать транзакцию
+
 PUT	/api/transactions/:id	Обновить транзакцию
+
 DELETE	/api/transactions/:id	Удалить транзакцию
 
 ### **Прогноз**
