@@ -144,36 +144,26 @@ npm run dev
 🔌 API Эндпоинты
 
 ###Аутентификация
-
-Метод	Эндпоинт	Описание
 POST	/api/auth/register	Регистрация
 POST	/api/auth/login	Вход
 GET	/api/auth/me	Получить текущего пользователя
 
 ###Категории
-
-Метод	Эндпоинт	Описание
 GET	/api/categories	Получить все категории пользователя
 POST	/api/categories	Создать категорию
 PUT	/api/categories/:id	Обновить категорию
 DELETE	/api/categories/:id	Удалить категорию (и все её транзакции)
 
 ###Транзакции
-
-Метод	Эндпоинт	Описание
 GET	/api/transactions	Получить все транзакции
 POST	/api/transactions	Создать транзакцию
 PUT	/api/transactions/:id	Обновить транзакцию
 DELETE	/api/transactions/:id	Удалить транзакцию
 
 ###Прогноз
-
-Метод	Эндпоинт	Описание
 GET	/api/forecast?period=month&months=3&inflation=0.05	Получить прогноз
 
 ###Экспорт
-
-Метод	Эндпоинт	Описание
 POST	/api/export/pdf	Сгенерировать PDF с транзакциями
 
 📄 Лицензия
