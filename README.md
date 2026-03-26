@@ -121,7 +121,7 @@
 - Node.js 20+
 - MongoDB (локально или Atlas)
 
-### **1. Клонирование репозитория**
+**1. Клонирование репозитория**
 ``bash
 git clone https://github.com/alexpankov87/Personal-Finance-Manager.git
 
@@ -135,7 +135,7 @@ npm install
 
 cp .env.example .env
 
-### **Отредактируйте .env (MONGO_URI, JWT_SECRET, PORT)**
+**Отредактируйте .env (MONGO_URI, JWT_SECRET, PORT)**
 
 npm run dev
 
@@ -151,7 +151,7 @@ npm run dev
 
 🔌 API Эндпоинты
 
-### **Аутентификация**
+ **Аутентификация**
 
 POST	/api/auth/register	Регистрация
 
@@ -159,7 +159,7 @@ POST	/api/auth/login	Вход
 
 GET	/api/auth/me	Получить текущего пользователя
 
-### **Категории**
+ **Категории**
 
 GET	/api/categories	Получить все категории пользователя
 
@@ -169,7 +169,7 @@ PUT	/api/categories/:id	Обновить категорию
 
 DELETE	/api/categories/:id	Удалить категорию (и все её транзакции)
 
-### **Транзакции**
+ **Транзакции**
 
 GET	/api/transactions	Получить все транзакции
 
@@ -179,11 +179,11 @@ PUT	/api/transactions/:id	Обновить транзакцию
 
 DELETE	/api/transactions/:id	Удалить транзакцию
 
-### **Прогноз**
+**Прогноз**
 
 GET	/api/forecast?period=month&months=3&inflation=0.05	Получить прогноз
 
-### **Экспорт**
+**Экспорт**
 
 POST	/api/export/pdf	Сгенерировать PDF с транзакциями
 
