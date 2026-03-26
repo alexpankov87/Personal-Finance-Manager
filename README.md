@@ -132,7 +132,7 @@ cd Personal-Finance-Manager
 cd server
 npm install
 cp .env.example .env
-# Отредактируйте .env (MONGO_URI, JWT_SECRET, PORT)
+### **Отредактируйте .env (MONGO_URI, JWT_SECRET, PORT)**
 npm run dev
 
 3. Настройка клиента
