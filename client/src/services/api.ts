@@ -118,3 +118,13 @@ export const fetchForecast = async (months = 3, inflation = 0.05, period = 'mont
   if (!res.ok) throw new Error('Failed to fetch forecast');
   return res.json();
 };
+
+export const updateTransaction = async (id: string, data: any) => {
+  const res = await fetch(`${API_BASE}/transactions/${id}`, {
+    method: 'PUT',
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to update transaction');
+  return res.json();
+};

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { fetchRecurring, createRecurring, updateRecurring, deleteRecurring } from './services/api';
+import type { RecurringTransaction } from './types';
 
 interface Category {
   _id: string;
@@ -8,20 +8,24 @@ interface Category {
   type: 'income' | 'expense';
 }
 
-interface Recurring {
-  _id: string;
-  amount: number;
-  type: 'income' | 'expense';
-  category: Category;
-  description?: string;
-  period: 'daily' | 'weekly' | 'monthly';
-  nextRun: string;
-  active: boolean;
+interface RecurringManagerProps {
+  categories: Category[];
+  recurring: RecurringTransaction[];
+  onAdd: (data: any) => Promise<any>;
+  onUpdate: (id: string, data: any) => Promise<any>;
+  onDelete: (id: string) => Promise<void>;
+  onToggleActive: (id: string, currentActive: boolean) => Promise<void>;
 }
 
-const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) => {
+const RecurringManager: React.FC<RecurringManagerProps> = ({
+  categories,
+  recurring,
+  onAdd,
+  onUpdate,
+  onDelete,
+  onToggleActive,
+}) => {
   const { t } = useTranslation();
-  const [recurringList, setRecurringList] = useState<Recurring[]>([]);
   const [form, setForm] = useState({
     amount: '',
     type: 'expense' as 'income' | 'expense',
@@ -32,19 +36,6 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
     active: true,
   });
   const [editingId, setEditingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadRecurring();
-  }, []);
-
-  const loadRecurring = async () => {
-    try {
-      const data = await fetchRecurring();
-      setRecurringList(data);
-    } catch (error) {
-      console.error('Failed to load recurring', error);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,9 +54,9 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
     };
     try {
       if (editingId) {
-        await updateRecurring(editingId, data);
+        await onUpdate(editingId, data);
       } else {
-        await createRecurring(data);
+        await onAdd(data);
       }
       setForm({
         amount: '',
@@ -77,13 +68,12 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
         active: true,
       });
       setEditingId(null);
-      loadRecurring();
     } catch (error) {
       console.error('Failed to save recurring', error);
     }
   };
 
-  const handleEdit = (item: Recurring) => {
+  const handleEdit = (item: RecurringTransaction) => {
     setEditingId(item._id);
     setForm({
       amount: item.amount.toString(),
@@ -99,25 +89,15 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
   const handleDelete = async (id: string) => {
     if (window.confirm(t('deleteConfirmRecurring'))) {
       try {
-        await deleteRecurring(id);
-        loadRecurring();
+        await onDelete(id);
       } catch (error) {
         console.error('Failed to delete recurring', error);
       }
     }
   };
 
-  const toggleActive = async (item: Recurring) => {
-    try {
-      await updateRecurring(item._id, { ...item, active: !item.active });
-      loadRecurring();
-    } catch (error) {
-      console.error('Failed to toggle active', error);
-    }
-  };
-
   return (
-    <div className="recurring-manager">
+    <div style={{ marginTop: '30px', borderTop: '1px solid #ccc', paddingTop: '20px' }}>
       <h2>{t('recurringOperations')}</h2>
 
       <form onSubmit={handleSubmit} className="form-group">
@@ -182,38 +162,38 @@ const RecurringManager: React.FC<{ categories: Category[] }> = ({ categories }) 
       </form>
 
       <div className="recurring-table">
-        <table>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr>
-              <th>{t('amount')}</th>
-              <th>{t('category')}</th>
-              <th>{t('description')}</th>
-              <th>{t('period')}</th>
-              <th>{t('nextRun')}</th>
-              <th>{t('status')}</th>
-              <th></th>
+            <tr style={{ borderBottom: '1px solid #ccc' }}>
+              <th style={{ textAlign: 'left', padding: '8px' }}>{t('amount')}</th>
+              <th style={{ textAlign: 'left', padding: '8px' }}>{t('category')}</th>
+              <th style={{ textAlign: 'left', padding: '8px' }}>{t('description')}</th>
+              <th style={{ textAlign: 'left', padding: '8px' }}>{t('period')}</th>
+              <th style={{ textAlign: 'left', padding: '8px' }}>{t('nextRun')}</th>
+              <th style={{ textAlign: 'left', padding: '8px' }}>{t('status')}</th>
+              <th style={{ width: '100px' }}></th>
             </tr>
           </thead>
           <tbody>
-            {recurringList.map(item => (
-              <tr key={item._id}>
-                <td className={item.type === 'income' ? 'income-text' : 'expense-text'}>
+            {recurring.map(item => (
+              <tr key={item._id} style={{ borderBottom: '1px solid #eee' }}>
+                <td style={{ padding: '8px', color: item.type === 'income' ? '#2e7d32' : '#c62828' }}>
                   {item.type === 'income' ? '+' : '-'}{item.amount.toFixed(2)} ₽
                 </td>
-                <td>{item.category.name}</td>
-                <td>{item.description || '-'}</td>
-                <td>
+                <td style={{ padding: '8px' }}>{item.category.name}</td>
+                <td style={{ padding: '8px' }}>{item.description || '-'}</td>
+                <td style={{ padding: '8px' }}>
                   {item.period === 'daily' && t('daily')}
                   {item.period === 'weekly' && t('weekly')}
                   {item.period === 'monthly' && t('monthly')}
                 </td>
-                <td>{new Date(item.nextRun).toLocaleDateString()}</td>
-                <td>
-                  <button onClick={() => toggleActive(item)}>
+                <td style={{ padding: '8px' }}>{new Date(item.nextRun).toLocaleDateString()}</td>
+                <td style={{ padding: '8px' }}>
+                  <button onClick={() => onToggleActive(item._id, item.active)}>
                     {item.active ? t('active') : t('inactive')}
                   </button>
                 </td>
-                <td>
+                <td style={{ padding: '8px' }}>
                   <button onClick={() => handleEdit(item)} className="icon-button">
                     <i className="ri-edit-line"></i>
                   </button>

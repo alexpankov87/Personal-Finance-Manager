@@ -1,31 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import { useTranslation } from 'react-i18next';
-import { fetchCategories, createCategory, fetchTransactions, createTransaction, deleteTransaction, fetchMockBankTransactions, importBankTransactions } from '../services/api';
+import { fetchMockBankTransactions, importBankTransactions } from '../services/api';
 import Dashboard from '../Dashboard';
 import RecurringManager from '../RecurringManager';
 import Papa from 'papaparse';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { fetchForecast } from '../services/api';
 import ThemeSwitcher from './ThemeSwitcher';
+import { useCategories } from '../hooks/useCategories';
+import { useTransactions } from '../hooks/useTransactions';
+import { useForecast } from '../hooks/useForecast';
+import { useRecurring } from '../hooks/useRecurring';
 
-interface Category {
-  _id: string;
-  name: string;
-  type: 'income' | 'expense';
-  color: string;
-  icon: string;
-}
-
-interface Transaction {
-  _id: string;
-  amount: number;
-  type: 'income' | 'expense';
-  category: Category;
-  date: string;
-  description?: string;
-}
 
 function DashboardLayout() {
   const { t, i18n } = useTranslation();
@@ -36,12 +23,10 @@ function DashboardLayout() {
     i18n.changeLanguage(lng);
   };
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [showThemePanel, setShowThemePanel] = useState(false);
   const [newCatName, setNewCatName] = useState('');
   const [newCatType, setNewCatType] = useState<'income' | 'expense'>('expense');
   const [newCatColor, setNewCatColor] = useState('#6B7280');
-  const [showThemePanel, setShowThemePanel] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
     amount: '',
     type: 'expense' as 'income' | 'expense',
@@ -50,53 +35,26 @@ function DashboardLayout() {
     description: '',
   });
   const [message, setMessage] = useState('');
-  const [forecast, setForecast] = useState<any>(null);
-  const [period, setPeriod] = useState('month');
 
-  useEffect(() => {
+  // Используем хуки для данных
+  const { categories, addCategory } = useCategories();
+  const { transactions, addTransaction, deleteTransaction } = useTransactions();
+  const { forecast, period, setPeriod } = useForecast(3, 0.05, 'month');
+  const { recurring, addRecurring, updateRecurring, deleteRecurring, toggleActive } = useRecurring();
+
+  // Проверка здоровья сервера
+  React.useEffect(() => {
     fetch('http://localhost:5001/api/health')
       .then(res => res.json())
       .then(data => setMessage(data.message))
       .catch(() => setMessage(t('serverError')));
-
-    loadCategories();
-    loadTransactions();
-    loadForecast();
-  }, [t, period]);
-
-    const loadForecast = async () => {
-    try {
-      const data = await fetchForecast(3, 0.05, period); 
-      setForecast(data);
-    } catch (error) {
-      console.error('Failed to load forecast', error);
-    }
-  };
-
-  const loadCategories = async () => {
-    try {
-      const data = await fetchCategories();
-      setCategories(data);
-    } catch (error) {
-      console.error('Failed to load categories', error);
-    }
-  };
-
-  const loadTransactions = async () => {
-    try {
-      const data = await fetchTransactions();
-      setTransactions(data);
-    } catch (error) {
-      console.error('Failed to load transactions', error);
-    }
-  };
+  }, [t]);
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createCategory({ name: newCatName, type: newCatType, color: newCatColor });
+      await addCategory({ name: newCatName, type: newCatType, color: newCatColor });
       setNewCatName('');
-      loadCategories();
     } catch (error) {
       console.error('Failed to create category', error);
     }
@@ -109,7 +67,7 @@ function DashboardLayout() {
       return;
     }
     try {
-      await createTransaction({
+      await addTransaction({
         amount: parseFloat(newTransaction.amount),
         type: newTransaction.type,
         category: newTransaction.category,
@@ -123,8 +81,6 @@ function DashboardLayout() {
         date: new Date().toISOString().slice(0, 10),
         description: '',
       });
-      loadTransactions();
-      loadCategories();
     } catch (error) {
       console.error('Failed to create transaction', error);
     }
@@ -134,7 +90,6 @@ function DashboardLayout() {
     if (window.confirm(t('deleteConfirm'))) {
       try {
         await deleteTransaction(id);
-        loadTransactions();
       } catch (error) {
         console.error('Failed to delete transaction', error);
       }
@@ -165,39 +120,38 @@ function DashboardLayout() {
       const mockTransactions = await fetchMockBankTransactions();
       const result = await importBankTransactions(mockTransactions);
       alert(`Импортировано ${result.transactions.length} транзакций`);
-      loadTransactions();
     } catch (error) {
       console.error('Import failed', error);
       alert('Ошибка импорта');
     }
   };
 
-const exportToPDF = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:5001/api/export/pdf', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ transactions }),
-    });
-    if (!response.ok) throw new Error('Export failed');
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'transactions.pdf');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error('Failed to export PDF', error);
-    alert('Ошибка при экспорте PDF');
-  }
-};
+  const exportToPDF = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5001/api/export/pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ transactions }),
+      });
+      if (!response.ok) throw new Error('Export failed');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'transactions.pdf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export PDF', error);
+      alert('Ошибка при экспорте PDF');
+    }
+  };
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')
@@ -208,7 +162,6 @@ const exportToPDF = async () => {
   const balance = totalIncome - totalExpense;
 
   return (
-    
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginBottom: '10px' }}>
         <button onClick={() => changeLanguage('ru')}>🇷🇺 Русский</button>
@@ -220,7 +173,7 @@ const exportToPDF = async () => {
         <button onClick={() => setShowThemePanel(!showThemePanel)}>
           🎨 Тема
         </button>
-         <button onClick={logout}>{t('logout')}</button>
+        <button onClick={logout}>{t('logout')}</button>
       </div>
       <h1>{t('title')}</h1>
       <p>{t('serverStatus')} {message}</p>
@@ -276,7 +229,14 @@ const exportToPDF = async () => {
         </div>
       )}
 
-      <RecurringManager categories={categories} />
+      <RecurringManager 
+        categories={categories}
+        recurring={recurring}
+        onAdd={addRecurring}
+        onUpdate={updateRecurring}
+        onDelete={deleteRecurring}
+        onToggleActive={toggleActive}
+      />
 
       <div className="content-container">
         <div style={{ flex: 1, minWidth: '250px' }}>
@@ -396,10 +356,10 @@ const exportToPDF = async () => {
           </div>
         </div>
       </div>
-       {/* Модальное окно для темы */}
+
+      {/* Модальное окно для темы */}
       {showThemePanel && (
         <>
-          {/* Затемнение фона */}
           <div
             style={{
               position: 'fixed',
@@ -413,7 +373,6 @@ const exportToPDF = async () => {
             }}
             onClick={() => setShowThemePanel(false)}
           />
-          {/* Модальное окно */}
           <div
             style={{
               position: 'fixed',
