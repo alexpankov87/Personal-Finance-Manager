@@ -1,23 +1,28 @@
 import express from 'express';
 import Category from '../models/Category';
+import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 
-// GET /api/categories
-router.get('/', async (req, res) => {
+router.use(authMiddleware);
+
+router.get('/', async (req: AuthRequest, res) => {
   try {
-    const categories = await Category.find();
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const categories = await Category.find({ user: userId });
     res.json(categories);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// POST /api/categories
-router.post('/', async (req, res) => {
+router.post('/', async (req: AuthRequest, res) => {
   try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
     const { name, type, color, icon } = req.body;
-    const category = new Category({ name, type, color, icon });
+    const category = new Category({ name, type, color, icon, user: userId });
     await category.save();
     res.status(201).json(category);
   } catch (error) {
@@ -25,10 +30,17 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /api/categories/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req: AuthRequest, res) => {
   try {
-    const category = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ message: 'Invalid ID' });
+    const category = await Category.findOneAndUpdate(
+      { _id: id, user: userId },
+      req.body,
+      { new: true }
+    );
     if (!category) return res.status(404).json({ message: 'Category not found' });
     res.json(category);
   } catch (error) {
@@ -36,10 +48,13 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/categories/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: AuthRequest, res) => {
   try {
-    const category = await Category.findByIdAndDelete(req.params.id);
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ message: 'Invalid ID' });
+    const category = await Category.findOneAndDelete({ _id: id, user: userId });
     if (!category) return res.status(404).json({ message: 'Category not found' });
     res.json({ message: 'Category deleted' });
   } catch (error) {

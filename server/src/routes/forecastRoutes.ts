@@ -1,11 +1,18 @@
 import express from 'express';
 import Transaction from '../models/Transaction';
 import RecurringTransaction from '../models/RecurringTransaction';
+import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+// Все запросы к прогнозу требуют авторизации
+router.use(authMiddleware);
+
+router.get('/', async (req: AuthRequest, res) => {
   try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
     const months = parseInt(req.query.months as string) || 3;
     const inflation = parseFloat(req.query.inflation as string) || 0.05;
 
@@ -14,6 +21,7 @@ router.get('/', async (req, res) => {
     startDate.setMonth(now.getMonth() - months);
 
     const transactions = await Transaction.find({
+      user: userId,
       date: { $gte: startDate }
     }).populate('category');
 
@@ -33,7 +41,6 @@ router.get('/', async (req, res) => {
 
     const monthsArray = Object.keys(monthlyTotals).sort();
 
-    // Если нет данных — возвращаем нули
     if (monthsArray.length === 0) {
       return res.json({
         currentMonth: { income: 0, expense: 0 },
@@ -57,6 +64,7 @@ router.get('/', async (req, res) => {
     const nextMonthEnd = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0);
 
     const recurring = await RecurringTransaction.find({
+      user: userId,
       active: true,
       nextRun: { $lte: nextMonthEnd }
     }).populate('category');
@@ -71,7 +79,6 @@ router.get('/', async (req, res) => {
     const forecastIncome = avgIncome * (1 + inflation) + recurringIncome;
     const forecastExpense = avgExpense * (1 + inflation) + recurringExpense;
 
-    // Безопасно получаем последний месяц
     const lastMonthKey = monthsArray[monthsArray.length - 1];
     const lastMonthData = lastMonthKey && monthlyTotals[lastMonthKey]
       ? monthlyTotals[lastMonthKey]

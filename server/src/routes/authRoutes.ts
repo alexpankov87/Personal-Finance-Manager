@@ -31,14 +31,15 @@ router.post('/register', async (req, res) => {
     const user = new User({ email, passwordHash, name });
     await user.save();
 
-    const defaultCategories = [
-      { name: 'Продукты', type: 'expense', color: '#6B7280', icon: 'restaurant-line', user: user._id },
-      { name: 'Транспорт', type: 'expense', color: '#6B7280', icon: 'car-line', user: user._id },
-      { name: 'Развлечения', type: 'expense', color: '#6B7280', icon: 'gamepad-line', user: user._id },
-      { name: 'Зарплата', type: 'income', color: '#6B7280', icon: 'money-cny-box-line', user: user._id },
-      { name: 'Подработка', type: 'income', color: '#6B7280', icon: 'briefcase-line', user: user._id },
+  const defaultCategories = [
+    { name: 'Продукты', type: 'expense', color: '#6B7280', icon: 'restaurant-line', user: user._id },
+    { name: 'Транспорт', type: 'expense', color: '#6B7280', icon: 'car-line', user: user._id },
+    { name: 'Развлечения', type: 'expense', color: '#6B7280', icon: 'gamepad-line', user: user._id },
+    { name: 'Зарплата', type: 'income', color: '#6B7280', icon: 'money-cny-box-line', user: user._id },
+    { name: 'Подработка', type: 'income', color: '#6B7280', icon: 'briefcase-line', user: user._id },
     ];
-    await Category.insertMany(defaultCategories);
+    
+  await Category.insertMany(defaultCategories);
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
     res.status(201).json({ token, user: { id: user._id, email, name } });

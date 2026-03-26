@@ -1,7 +1,14 @@
 const API_BASE = 'http://localhost:5001/api';
 
+const getAuthHeaders = (): HeadersInit => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const fetchCategories = async () => {
-  const res = await fetch(`${API_BASE}/categories`);
+  const res = await fetch(`${API_BASE}/categories`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch categories');
   return res.json();
 };
@@ -9,16 +16,17 @@ export const fetchCategories = async () => {
 export const createCategory = async (data: { name: string; type: 'income' | 'expense'; color: string; icon?: string }) => {
   const res = await fetch(`${API_BASE}/categories`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
   if (!res.ok) throw new Error('Failed to create category');
   return res.json();
 };
 
-// ===== НОВЫЕ ФУНКЦИИ ДЛЯ ТРАНЗАКЦИЙ =====
 export const fetchTransactions = async () => {
-  const res = await fetch(`${API_BASE}/transactions`);
+  const res = await fetch(`${API_BASE}/transactions`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch transactions');
   return res.json();
 };
@@ -32,7 +40,7 @@ export const createTransaction = async (data: {
 }) => {
   const res = await fetch(`${API_BASE}/transactions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
   if (!res.ok) throw new Error('Failed to create transaction');
@@ -41,14 +49,17 @@ export const createTransaction = async (data: {
 
 export const deleteTransaction = async (id: string) => {
   const res = await fetch(`${API_BASE}/transactions/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
+    headers: getAuthHeaders(),
   });
   if (!res.ok) throw new Error('Failed to delete transaction');
   return res.json();
 };
 
 export const fetchRecurring = async () => {
-  const res = await fetch(`${API_BASE}/recurring`);
+  const res = await fetch(`${API_BASE}/recurring`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch recurring');
   return res.json();
 };
@@ -56,7 +67,7 @@ export const fetchRecurring = async () => {
 export const createRecurring = async (data: any) => {
   const res = await fetch(`${API_BASE}/recurring`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
   if (!res.ok) throw new Error('Failed to create recurring');
@@ -66,7 +77,7 @@ export const createRecurring = async (data: any) => {
 export const updateRecurring = async (id: string, data: any) => {
   const res = await fetch(`${API_BASE}/recurring/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
   if (!res.ok) throw new Error('Failed to update recurring');
@@ -74,13 +85,18 @@ export const updateRecurring = async (id: string, data: any) => {
 };
 
 export const deleteRecurring = async (id: string) => {
-  const res = await fetch(`${API_BASE}/recurring/${id}`, { method: 'DELETE' });
+  const res = await fetch(`${API_BASE}/recurring/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to delete recurring');
   return res.json();
 };
 
 export const fetchMockBankTransactions = async () => {
-  const res = await fetch(`${API_BASE}/bank/mock`);
+  const res = await fetch(`${API_BASE}/bank/mock`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch mock bank transactions');
   return res.json();
 };
@@ -88,9 +104,17 @@ export const fetchMockBankTransactions = async () => {
 export const importBankTransactions = async (transactions: any[]) => {
   const res = await fetch(`${API_BASE}/bank/import`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify({ transactions }),
   });
   if (!res.ok) throw new Error('Failed to import bank transactions');
+  return res.json();
+};
+
+export const fetchForecast = async (months = 3, inflation = 0.05) => {
+  const res = await fetch(`${API_BASE}/forecast?months=${months}&inflation=${inflation}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch forecast');
   return res.json();
 };

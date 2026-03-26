@@ -1,12 +1,17 @@
 import express from 'express';
 import Transaction from '../models/Transaction';
+import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 
+router.use(authMiddleware);
+
 // GET /api/transactions
-router.get('/', async (req, res) => {
+router.get('/', async (req: AuthRequest, res) => {
   try {
-    const transactions = await Transaction.find().populate('category');
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const transactions = await Transaction.find({ user: userId }).populate('category');
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -14,10 +19,12 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/transactions
-router.post('/', async (req, res) => {
+router.post('/', async (req: AuthRequest, res) => {
   try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
     const { amount, type, category, date, description } = req.body;
-    const transaction = new Transaction({ amount, type, category, date, description });
+    const transaction = new Transaction({ amount, type, category, date, description, user: userId });
     await transaction.save();
     const populated = await transaction.populate('category');
     res.status(201).json(populated);
@@ -26,25 +33,37 @@ router.post('/', async (req, res) => {
   }
 });
 
-// DELETE /api/transactions/:id
-router.delete('/:id', async (req, res) => {
+// PUT /api/transactions/:id
+router.put('/:id', async (req: AuthRequest, res) => {
   try {
-    const transaction = await Transaction.findByIdAndDelete(req.params.id);
-    if (!transaction) return res.status(404).json({ message: 'Transaction not found' });
-    res.json({ message: 'Transaction deleted' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// PUT /api/transactions/:id (обновление, опционально)
-router.put('/:id', async (req, res) => {
-  try {
-    const transaction = await Transaction.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('category');
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ message: 'Invalid ID' });
+    const transaction = await Transaction.findOneAndUpdate(
+      { _id: id, user: userId },
+      req.body,
+      { new: true }
+    ).populate('category');
     if (!transaction) return res.status(404).json({ message: 'Transaction not found' });
     res.json(transaction);
   } catch (error) {
     res.status(400).json({ message: 'Invalid data' });
+  }
+});
+
+// DELETE /api/transactions/:id
+router.delete('/:id', async (req: AuthRequest, res) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ message: 'Invalid ID' });
+    const transaction = await Transaction.findOneAndDelete({ _id: id, user: userId });
+    if (!transaction) return res.status(404).json({ message: 'Transaction not found' });
+    res.json({ message: 'Transaction deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

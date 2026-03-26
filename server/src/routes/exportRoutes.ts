@@ -2,20 +2,19 @@ import express from 'express';
 import PDFDocument from 'pdfkit';
 import path from 'path';
 import fs from 'fs';
-
-interface Transaction {
-  date: string;
-  category: { name: string };
-  description?: string;
-  type: 'income' | 'expense';
-  amount: number;
-}
+import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 
-router.post('/pdf', async (req, res) => {
+// Все запросы на экспорт требуют авторизации
+router.use(authMiddleware);
+
+router.post('/pdf', async (req: AuthRequest, res) => {
   try {
-    const transactions = (req.body.transactions || []) as Transaction[];
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const transactions = req.body.transactions || [];
 
     const doc = new PDFDocument({ margin: 30, size: 'A4' });
 
@@ -31,63 +30,62 @@ router.post('/pdf', async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="transactions.pdf"');
     doc.pipe(res);
 
-    // Заголовок документа
-    doc.fontSize(20).text('Personal Finance Manager', { align: 'center' });
-    doc.fontSize(12).text(`Report date: ${new Date().toLocaleDateString()}`, { align: 'center' });
+    doc.fontSize(18).text('Список транзакций', { align: 'center' });
     doc.moveDown();
 
-    // Таблица
-    const headers = ['Date', 'Category', 'Description', 'Amount'];
-    const colPositions = [50, 130, 250, 450];
-    let y = 120;
+    const pageWidth = (doc as any).page.width - 60 || 550;
+    const colWidths = [80, 130, 200, pageWidth - 80 - 130 - 200];
+    const headers = ['Дата', 'Категория', 'Описание', 'Сумма'];
 
-    // Рисуем заголовки
-    doc.font('Helvetica-Bold');
+    let y = 100;
+
+    // Заголовки таблицы
+    doc.fontSize(10);
     headers.forEach((header, i) => {
-      doc.text(header, colPositions[i], y);
+      const x = 30 + (i === 0 ? 0 : colWidths.slice(0, i).reduce((a, b) => a + b, 0));
+      doc.text(header, x, y, { width: colWidths[i], align: i === 3 ? 'right' : 'left' });
     });
     y += 20;
 
-    // Данные
-    doc.font('DejaVu');
+    // Данные (уже принадлежат пользователю, т.к. клиент передал только его транзакции)
     for (const t of transactions) {
-      if (!t) continue;
-      const row: string[] = [
+      const row = [
         new Date(t.date).toLocaleDateString(),
-        t.category?.name || '',
+        t.category.name,
         t.description || '',
-        `${t.type === 'income' ? '+' : '-'}${t.amount?.toFixed(2) || '0'} ₽`,
+        `${t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)} ₽`,
       ];
       for (let i = 0; i < row.length; i++) {
-        const text = row[i] ?? '';
-        doc.text(text, colPositions[i], y);
+        const x = 30 + (i === 0 ? 0 : colWidths.slice(0, i).reduce((a, b) => a + b, 0));
+        const text = row[i];
+        const truncated = text.length > 30 ? text.slice(0, 27) + '...' : text;
+        doc.text(truncated, x, y, {
+          width: colWidths[i],
+          align: i === 3 ? 'right' : 'left',
+          ellipsis: true,
+        });
       }
       y += 20;
-      if (y > 750) {
+      if (y > (doc as any).page.height - 50) {
         doc.addPage();
         y = 50;
-        // Повторяем заголовки на новой странице
-        headers.forEach((header, i) => {
-          doc.text(header, colPositions[i], y);
-        });
-        y += 20;
       }
     }
 
     // Итоги
     const totalIncome = transactions
-      .filter(t => t?.type === 'income')
-      .reduce((sum, t) => sum + (t?.amount || 0), 0);
+      .filter((t: any) => t.type === 'income')
+      .reduce((sum: number, t: any) => sum + t.amount, 0);
     const totalExpense = transactions
-      .filter(t => t?.type === 'expense')
-      .reduce((sum, t) => sum + (t?.amount || 0), 0);
+      .filter((t: any) => t.type === 'expense')
+      .reduce((sum: number, t: any) => sum + t.amount, 0);
     const balance = totalIncome - totalExpense;
 
-    y += 20;
-    doc.font('Helvetica-Bold');
-    doc.text(`Total Income: ${totalIncome.toFixed(2)} ₽`, 50, y);
-    doc.text(`Total Expense: ${totalExpense.toFixed(2)} ₽`, 50, y + 15);
-    doc.text(`Balance: ${balance.toFixed(2)} ₽`, 50, y + 30);
+    y += 15;
+    doc.fontSize(10);
+    doc.text(`Итого доходов: ${totalIncome.toFixed(2)} ₽`, 30, y);
+    doc.text(`Итого расходов: ${totalExpense.toFixed(2)} ₽`, 30, y + 15);
+    doc.text(`Баланс: ${balance.toFixed(2)} ₽`, 30, y + 30);
 
     doc.end();
   } catch (error) {

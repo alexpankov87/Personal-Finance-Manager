@@ -5,7 +5,6 @@ import connectDB from './config/db';
 import categoryRoutes from './routes/categoryRoutes';
 import recurringRoutes from './routes/recurringRoutes';
 import transactionRoutes from './routes/transactionRoutes'; 
-import { seedCategories } from './seeds/categories';
 import cron from 'node-cron';
 import { processRecurringTransactions } from './cron/recurringJobs';
 import forecastRoutes from './routes/forecastRoutes';
@@ -16,7 +15,6 @@ import authRoutes from './routes/authRoutes';
 
 dotenv.config();
 connectDB().then(() => {
-  seedCategories();
 });
 
 const app = express();

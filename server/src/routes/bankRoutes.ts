@@ -1,8 +1,10 @@
 import express from 'express';
 import Transaction from '../models/Transaction';
 import Category from '../models/Category';
+import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
+router.use(authMiddleware);
 
 // Мок-данные транзакций
 const mockTransactions = [
@@ -14,19 +16,19 @@ const mockTransactions = [
 ];
 
 // GET /api/bank/mock
-router.get('/mock', async (req, res) => {
+router.get('/mock', async (req: AuthRequest, res) => {
   try {
-    // Для простоты возвращаем мок-транзакции, но в реальном сценарии здесь был бы запрос к банковскому API
-    const categories = await Category.find();
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const categories = await Category.find({ user: userId });
     
     const transactions = mockTransactions.map(mock => {
-      // Пытаемся найти подходящую категорию по ключевым словам
       let category = categories.find(c => 
         c.type === mock.type && 
         mock.keywords.some(k => c.name.toLowerCase().includes(k))
       );
       if (!category) {
-        // Если не нашли, берём первую категорию расходов/доходов
         category = categories.find(c => c.type === mock.type);
       }
       return {
@@ -35,6 +37,7 @@ router.get('/mock', async (req, res) => {
         category: category?._id,
         date: new Date(),
         description: mock.description,
+        user: userId, 
       };
     });
     
@@ -46,9 +49,12 @@ router.get('/mock', async (req, res) => {
 });
 
 // POST /api/bank/import
-router.post('/import', async (req, res) => {
+router.post('/import', async (req: AuthRequest, res) => {
   try {
-    const { transactions } = req.body; // ожидаем массив транзакций, подготовленных клиентом
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    
+    const { transactions } = req.body;
     if (!transactions || !transactions.length) {
       return res.status(400).json({ message: 'No transactions to import' });
     }
@@ -61,6 +67,7 @@ router.post('/import', async (req, res) => {
         category: t.category,
         date: t.date,
         description: t.description,
+        user: userId, 
       });
       await transaction.save();
       created.push(transaction);

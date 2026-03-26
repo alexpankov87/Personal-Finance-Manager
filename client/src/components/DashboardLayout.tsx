@@ -7,6 +7,7 @@ import RecurringManager from '../RecurringManager';
 import Papa from 'papaparse';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { fetchForecast } from '../services/api';
 
 interface Category {
   _id: string;
@@ -60,10 +61,9 @@ function DashboardLayout() {
     loadForecast();
   }, [t]);
 
-  const loadForecast = async () => {
+    const loadForecast = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/forecast?months=3&inflation=0.05');
-      const data = await res.json();
+      const data = await fetchForecast();
       setForecast(data);
     } catch (error) {
       console.error('Failed to load forecast', error);
