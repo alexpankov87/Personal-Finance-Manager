@@ -195,7 +195,11 @@ Alex Pankov
 GitHub
 
 🙏 Благодарности
+
 Remix Icon – иконки
+
 Recharts – графики
+
 i18next – интернационализация
+
 MongoDB Atlas – бесплатная база данных
