@@ -47,5 +47,18 @@
   "last3months": "Last 3 months",
   "lastQuarter": "Last quarter",
   "lastYear": "Last year",
-  "comparisonChart": "Income vs Expenses Comparison"
+  "comparisonChart": "Income vs Expenses Comparison",
+  "deleteCategoryConfirm": "Delete category? All transactions with this category will also be deleted",
+  "food": "Food",
+  "transport": "Transport",
+  "entertainment": "Entertainment",
+  "salary": "Salary",
+  "sideJob": "Side job",
+  "shopping": "Shopping",
+  "health": "Health",
+  "housing": "Housing",
+  "travel": "Travel",
+  "phone": "Phone",
+  "education": "Education",
+  "gift": "Gift"
 }

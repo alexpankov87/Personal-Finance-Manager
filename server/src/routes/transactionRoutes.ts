@@ -19,11 +19,21 @@ router.get('/', async (req: AuthRequest, res) => {
 });
 
 // POST /api/transactions
+import Category from '../models/Category';
+
+// POST /api/transactions
 router.post('/', async (req: AuthRequest, res) => {
   try {
     const userId = req.userId;
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
     const { amount, type, category, date, description } = req.body;
+    
+    // Проверяем, существует ли категория у этого пользователя
+    const categoryExists = await Category.findOne({ _id: category, user: userId });
+    if (!categoryExists) {
+      return res.status(400).json({ message: 'Category not found' });
+    }
+    
     const transaction = new Transaction({ amount, type, category, date, description, user: userId });
     await transaction.save();
     const populated = await transaction.populate('category');

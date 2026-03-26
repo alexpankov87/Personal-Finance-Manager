@@ -35,12 +35,29 @@ function DashboardLayout() {
     description: '',
   });
   const [message, setMessage] = useState('');
+  const [newCatIcon, setNewCatIcon] = useState('restaurant-line');
+
+  const iconOptions = [
+    { value: 'restaurant-line', labelKey: 'food' },
+    { value: 'car-line', labelKey: 'transport' },
+    { value: 'gamepad-line', labelKey: 'entertainment' },
+    { value: 'money-cny-box-line', labelKey: 'salary' },
+    { value: 'briefcase-line', labelKey: 'sideJob' },
+    { value: 'shopping-bag-line', labelKey: 'shopping' },
+    { value: 'heart-line', labelKey: 'health' },
+    { value: 'home-line', labelKey: 'housing' },
+    { value: 'plane-line', labelKey: 'travel' },
+    { value: 'phone-line', labelKey: 'phone' },
+    { value: 'book-line', labelKey: 'education' },
+    { value: 'gift-line', labelKey: 'gift' },
+  ];
 
   // Используем хуки для данных
-  const { categories, addCategory } = useCategories();
+  const { categories, addCategory, deleteCategory } = useCategories();
   const { transactions, addTransaction, deleteTransaction } = useTransactions();
   const { forecast, period, setPeriod } = useForecast(3, 0.05, 'month');
   const { recurring, addRecurring, updateRecurring, deleteRecurring, toggleActive } = useRecurring();
+  
 
   // Проверка здоровья сервера
   React.useEffect(() => {
@@ -53,8 +70,14 @@ function DashboardLayout() {
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addCategory({ name: newCatName, type: newCatType, color: newCatColor });
+      await addCategory({ 
+        name: newCatName, 
+        type: newCatType, 
+        color: newCatColor,
+        icon: newCatIcon  // добавляем иконку
+      });
       setNewCatName('');
+      setNewCatIcon('restaurant-line'); // сбрасываем иконку
     } catch (error) {
       console.error('Failed to create category', error);
     }
@@ -160,6 +183,7 @@ function DashboardLayout() {
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
   const balance = totalIncome - totalExpense;
+  
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -252,6 +276,22 @@ function DashboardLayout() {
               <option value="expense">{t('expenseType')}</option>
               <option value="income">{t('incomeType')}</option>
             </select>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <select 
+                value={newCatIcon} 
+                onChange={e => setNewCatIcon(e.target.value)}
+                style={{ flex: 1 }}
+              >
+                {iconOptions.map(icon => (
+                  <option key={icon.value} value={icon.value}>
+                    {t(icon.labelKey)}
+                  </option>
+                ))}
+              </select>
+              <i className={`ri-${newCatIcon}`} style={{ fontSize: '24px' }}></i>
+            </div>
+            
             <input
               type="color"
               value={newCatColor}
@@ -260,10 +300,21 @@ function DashboardLayout() {
             <button type="submit">{t('addCategory')}</button>
           </form>
           <ul className="category-list">
-            {categories.map(cat => (
+           {categories.map(cat => (
               <li key={cat._id} className="category-item">
                 <i className={`ri-${cat.icon}`} style={{ marginRight: '8px', fontSize: '24px' }}></i>
                 {cat.name} ({cat.type === 'expense' ? t('expenseType') : t('incomeType')})
+                <button 
+                  onClick={() => {
+                    if (window.confirm(t('deleteCategoryConfirm'))) {
+                      deleteCategory(cat._id);
+                    }
+                  }}
+                  className="icon-button"
+                  style={{ marginLeft: '8px', color: 'var(--expense-color)' }}
+                >
+                  <i className="ri-delete-bin-line"></i>
+                </button>
               </li>
             ))}
           </ul>

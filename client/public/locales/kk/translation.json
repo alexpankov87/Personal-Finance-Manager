@@ -48,5 +48,18 @@
   "last3months": "Соңғы 3 ай",
   "lastQuarter": "Соңғы тоқсан",
   "lastYear": "Соңғы жыл",
-  "comparisonChart": "Кіріс пен шығындарды салыстыру"
+  "comparisonChart": "Кіріс пен шығындарды салыстыру",
+  "deleteCategoryConfirm": "Санатты жою? Осы санаттағы барлық транзакциялар да жойылады",
+  "food": "Азық-түлік",
+  "transport": "Көлік",
+  "entertainment": "Ойын-сауық",
+  "salary": "Жалақы",
+  "sideJob": "Қосымша жұмыс",
+  "shopping": "Сауда",
+  "health": "Денсаулық",
+  "housing": "Тұрғын үй",
+  "travel": "Саяхат",
+  "phone": "Телефон",
+  "education": "Білім",
+  "gift": "Сыйлық"
 }

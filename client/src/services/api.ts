@@ -128,3 +128,12 @@ export const updateTransaction = async (id: string, data: any) => {
   if (!res.ok) throw new Error('Failed to update transaction');
   return res.json();
 };
+
+export const deleteCategory = async (id: string) => {
+  const res = await fetch(`${API_BASE}/categories/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to delete category');
+  return res.json();
+};

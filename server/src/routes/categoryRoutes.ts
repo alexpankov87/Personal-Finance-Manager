@@ -1,5 +1,6 @@
 import express from 'express';
 import Category from '../models/Category';
+import Transaction from '../models/Transaction';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
@@ -54,10 +55,20 @@ router.delete('/:id', async (req: AuthRequest, res) => {
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
     const { id } = req.params;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
-    const category = await Category.findOneAndDelete({ _id: id, user: userId });
+    
+    // Проверяем, существует ли категория
+    const category = await Category.findOne({ _id: id, user: userId });
     if (!category) return res.status(404).json({ message: 'Category not found' });
-    res.json({ message: 'Category deleted' });
+    
+    // Удаляем все транзакции, связанные с этой категорией
+    await Transaction.deleteMany({ category: id, user: userId });
+    
+    // Удаляем саму категорию
+    await Category.findOneAndDelete({ _id: id, user: userId });
+    
+    res.json({ message: 'Category and all related transactions deleted' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 });
