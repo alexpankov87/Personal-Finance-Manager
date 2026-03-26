@@ -64,6 +64,14 @@
   "gift": "Подарки",
   "status": "Статус",
   "type": "Тип",
-  "name": "Название"
+  "name": "Название",
+  "themeSettings": "Настройки темы",
+  "theme": "Тема",
+  "lightTheme": "☀️ Светлая",
+  "darkTheme": "🌙 Тёмная",
+  "grayTheme": "⚙️ Серая",
+  "blueTheme": "💙 Синяя",
+  "accentColor": "Акцентный цвет"
+
 
 }

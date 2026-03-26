@@ -195,7 +195,7 @@ function DashboardLayout() {
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
         <button onClick={() => setShowThemePanel(!showThemePanel)}>
-          🎨 Тема
+          🎨 {t('theme')}
         </button>
         <button onClick={logout}>{t('logout')}</button>
       </div>
@@ -447,7 +447,7 @@ function DashboardLayout() {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>Настройки темы</h3>
+              <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>{t('themeSettings')}</h3>
               <button
                 onClick={() => setShowThemePanel(false)}
                 style={{

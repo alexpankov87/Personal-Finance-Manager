@@ -62,5 +62,13 @@
   "phone": "Телефон",
   "education": "Білім",
   "gift": "Сыйлық",
-  "status": "Күй"
+  "status": "Күй",
+  "themeSettings": "Тақырып параметрлері",
+  "theme": "Тақырып",
+  "lightTheme": "☀️ Ашық",
+  "darkTheme": "🌙 Қараңғы",
+  "grayTheme": "⚙️ Сұр",
+  "blueTheme": "💙 Көк",
+  "accentColor": "Акцент түс"
+
 }

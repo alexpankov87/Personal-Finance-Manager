@@ -61,5 +61,12 @@
   "phone": "Phone",
   "education": "Education",
   "gift": "Gift",
-  "status": "Status"
+  "status": "Status",
+  "themeSettings": "Theme Settings",
+  "theme": "Theme",
+  "lightTheme": "☀️ Light",
+  "darkTheme": "🌙 Dark",
+  "grayTheme": "⚙️ Gray",
+  "blueTheme": "💙 Blue",
+  "accentColor": "Accent Color"
 }
