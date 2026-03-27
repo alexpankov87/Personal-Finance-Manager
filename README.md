@@ -115,13 +115,13 @@ cd server
 
 cp .env.example .env
 
-# **Отредактируйте** .env (MONGO_URI, JWT_SECRET, PORT)
+### **Отредактируйте** .env (MONGO_URI, JWT_SECRET, PORT)
 
 npm install
 
 npm run dev
 
-**3. Настройка клиента**
+### **3. Настройка клиента**
 
 cd client
 
@@ -137,7 +137,7 @@ npm run dev
 
 🔧 **Переменные окружения**
 
-Сервер (server/.env)
+### Сервер (server/.env)
 
 .env
 
@@ -157,7 +157,7 @@ VITE_API_URL=http://localhost:5001/api
 
 🚀 **Деплой**
 
-**Сервер (Render)**
+### **Сервер (Render)**
 
 Создайте аккаунт на render.com
 
@@ -181,14 +181,14 @@ JWT_SECRET – сгенерируйте: node -e "console.log(require('crypto').
 
 FRONTEND_URL – URL вашего фронтенда (после деплоя клиента)
 
-**Клиент (Vercel)**
+### **Клиент (Vercel)**
 Создайте аккаунт на vercel.com
 
 Нажмите Add New... → Project
 
 Импортируйте GitHub репозиторий
 
-Настройки:
+### Настройки:
 
 Root Directory: client
 
@@ -196,7 +196,7 @@ Build Command: npm run build
 
 Output Directory: dist
 
-Добавьте переменную окружения:
+### Добавьте переменную окружения:
 
 VITE_API_URL – URL вашего сервера на Render (например, https://your-api.onrender.com/api)
 
