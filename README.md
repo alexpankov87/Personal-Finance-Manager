@@ -165,7 +165,7 @@ VITE_API_URL=http://localhost:5001/api
 
 Подключите GitHub репозиторий
 
-Настройки:
+### **Настройки:**
 
 Root Directory: server
 
@@ -173,7 +173,7 @@ Build Command: npm install && npm run build
 
 Start Command: npm start
 
-Добавьте переменные окружения:
+### **Добавьте переменные окружения:**
 
 MONGO_URI – строка из MongoDB Atlas
 
