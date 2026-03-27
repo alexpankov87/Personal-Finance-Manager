@@ -78,5 +78,7 @@
   "deleteError": "Error deleting",
   "categoryAdded": "Category added",
   "categoryAddError": "Error adding category",
-  "deleteCategoryError": "Error deleting category"
+  "deleteCategoryError": "Error deleting category",
+  "online": "Online",
+  "offline": "Offline"
 }

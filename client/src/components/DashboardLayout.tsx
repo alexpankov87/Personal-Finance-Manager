@@ -213,7 +213,13 @@ function DashboardLayout() {
         <button onClick={logout}>{t('logout')}</button>
       </div>
       <h1>{t('title')}</h1>
-      <p>{t('serverStatus')} {message}</p>
+      <div className="status-container">
+          <div className={`status-dot ${message === 'Server is running' ? '' : 'offline'}`}></div>
+          <span className="status-text">{t('serverStatus')}</span>
+          <span className={`status-text ${message === 'Server is running' ? 'online' : 'offline'}`}>
+              {message === 'Server is running' ? t('online') : t('offline')}
+          </span>
+      </div>
 
       <div className="balance-container">
         <div className="card">

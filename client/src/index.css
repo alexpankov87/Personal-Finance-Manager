@@ -460,6 +460,60 @@ tr:hover {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
+/* Статус сервера */
+.status-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    width: fit-content;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #4caf50;
+    animation: pulse 1.5s infinite;
+}
+
+.status-dot.offline {
+    background-color: #f44336;
+    animation: none;
+    box-shadow: none;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+
+.status-text {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.status-text.online {
+    color: #4caf50;
+}
+
+.status-text.offline {
+    color: #f44336;
+}
+
 /* ============================================ */
 /* RESPONSIVE */
 /* ============================================ */

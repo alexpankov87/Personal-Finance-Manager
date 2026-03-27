@@ -81,6 +81,8 @@
   "deleteError": "Ошибка при удалении",
   "categoryAdded": "Категория добавлена",
   "categoryAddError": "Ошибка при добавлении категории",
-  "deleteCategoryError": "Ошибка при удалении категории"
+  "deleteCategoryError": "Ошибка при удалении категории",
+  "online": "Онлайн",
+  "offline": "Офлайн"
   
 }

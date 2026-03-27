@@ -79,5 +79,7 @@
   "deleteError": "Жоюда қате кетті",
   "categoryAdded": "Санат қосылды",
   "categoryAddError": "Санатты қосу қатесі",
-  "deleteCategoryError": "Санатты жоюда қате кетті"
+  "deleteCategoryError": "Санатты жоюда қате кетті",
+  "online": "Қосылған",
+  "offline": "Өшірілген"
 }
