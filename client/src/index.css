@@ -583,7 +583,6 @@ tr:hover {
 
 @media (max-width: 480px) {
     .category-item {
-        flex-direction: column;
         align-items: flex-start;
     }
 
