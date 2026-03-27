@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import { useTranslation } from 'react-i18next';
-import { fetchMockBankTransactions, importBankTransactions } from '../services/api';
+import { fetchMockBankTransactions, importBankTransactions, checkHealth } from '../services/api';
 import Dashboard from '../Dashboard';
 import RecurringManager from '../RecurringManager';
 import Papa from 'papaparse';
@@ -13,6 +13,7 @@ import { useTransactions } from '../hooks/useTransactions';
 import { useForecast } from '../hooks/useForecast';
 import { useRecurring } from '../hooks/useRecurring';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 function DashboardLayout() {
   const { t, i18n } = useTranslation();
@@ -57,11 +58,10 @@ function DashboardLayout() {
   const { transactions, addTransaction, deleteTransaction } = useTransactions();
   const { forecast, period, setPeriod } = useForecast(3, 0.05, 'month');
   const { recurring, addRecurring, updateRecurring, deleteRecurring, toggleActive } = useRecurring();
-  
 
   // Проверка здоровья сервера
   React.useEffect(() => {
-    fetch('http://localhost:5001/api/health')
+    fetch(`${API_BASE}/health`)
       .then(res => res.json())
       .then(data => setMessage(data.message))
       .catch(() => setMessage(t('serverError')));
@@ -74,10 +74,10 @@ function DashboardLayout() {
         name: newCatName, 
         type: newCatType, 
         color: newCatColor,
-        icon: newCatIcon  // добавляем иконку
+        icon: newCatIcon
       });
       setNewCatName('');
-      setNewCatIcon('restaurant-line'); // сбрасываем иконку
+      setNewCatIcon('restaurant-line');
     } catch (error) {
       console.error('Failed to create category', error);
     }
@@ -152,7 +152,7 @@ function DashboardLayout() {
   const exportToPDF = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5001/api/export/pdf', {
+      const response = await fetch(`${API_BASE}/export/pdf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +183,6 @@ function DashboardLayout() {
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
   const balance = totalIncome - totalExpense;
-  
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -381,7 +380,7 @@ function DashboardLayout() {
                   <th style={{ textAlign: 'left', padding: '8px' }}>{t('description')}</th>
                   <th style={{ textAlign: 'right', padding: '8px' }}>{t('amount')}</th>
                   <th style={{ width: '50px' }}></th>
-                </tr>
+                 </tr>
               </thead>
               <tbody>
                 {transactions.map(tx => (
