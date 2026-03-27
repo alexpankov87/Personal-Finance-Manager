@@ -82,7 +82,8 @@
 - **Recharts** — графики
 - **RemixIcon** — иконки
 - **Papaparse** — экспорт CSV
-- **jsPDF + pdfkit** — экспорт PDF (частично на сервере)
+- **react-hot-toast** — уведомления
+- **react-modal** — модальные окна
 
 ### **Сервер**
 - **Node.js 20** + **Express**
@@ -95,91 +96,38 @@
 
 ---
 
-## ✨ Функциональность
-
-### 🔐 Авторизация
-- Регистрация и вход с JWT-токеном
-- Валидация полей (имя, email, пароль)
-- Привязка всех данных к пользователю
-
-### 📂 Управление категориями
-- Создание, редактирование, удаление
-- Выбор иконки из библиотеки RemixIcon
-- Настройка цвета
-- Каскадное удаление транзакций при удалении категории
-
-### 💸 Управление транзакциями
-- Добавление доходов/расходов
-- Выбор категории, даты, описание
-- Редактирование и удаление
-
-### 🔁 Повторяющиеся операции
-- Ежедневные, еженедельные, ежемесячные
-- Автоматическое создание транзакций через cron
-- Управление активностью
-
-### 📊 Дашборд
-- Расходы по категориям (круговая диаграмма)
-- Динамика доходов/расходов (линейный график)
-- Сравнение (барчарт)
-- Выбор периода (месяц/квартал/год)
-
-### 🔮 Прогноз бюджета
-- На основе истории за 3 месяца
-- Учёт инфляции (+5%)
-- Учёт повторяющихся операций
-
-### 📤 Экспорт данных
-- CSV (с поддержкой кириллицы)
-- PDF (с поддержкой кириллицы, таблица, итоги)
-
-### 🏦 Мок-импорт из банка
-- Тестовые транзакции для быстрого заполнения
-
-### 🌍 Интернационализация
-- Русский, английский, казахский
-- Автоопределение языка браузера
-- Переключение языка в интерфейсе
-
-### 🎨 Кастомные темы
-- Светлая, тёмная, серая, синяя
-- Выбор акцентного цвета (6 пресетов)
-- Сохранение выбора в localStorage
-
-### 📱 Адаптивность
-- Корректное отображение на мобильных устройствах
-- Горизонтальная прокрутка таблиц
-- Вертикальное расположение элементов
-
----
-
-### 📦 Установка и запуск
+## 📦 Установка и запуск
 
 ### **Требования**
 - Node.js 20+
 - MongoDB (локально или Atlas)
 
-**1. Клонирование репозитория**
+### **1. Клонирование репозитория**
 ``bash
+
 git clone https://github.com/alexpankov87/Personal-Finance-Manager.git
 
 cd Personal-Finance-Manager
 
-2. Настройка сервера
+**2. Настройка сервера**
 
 cd server
 
-npm install
-
 cp .env.example .env
 
-**Отредактируйте .env (MONGO_URI, JWT_SECRET, PORT)**
+# **Отредактируйте** .env (MONGO_URI, JWT_SECRET, PORT)
+
+npm install
 
 npm run dev
 
-3. Настройка клиента
+**3. Настройка клиента**
 
 cd client
+
+cp .env.example .env
+
+# **Отредактируйте** .env (VITE_API_URL)
 
 npm install
 
@@ -187,57 +135,106 @@ npm run dev
 
 Приложение будет доступно по адресу http://localhost:5173
 
-🔌 API Эндпоинты
+🔧 **Переменные окружения**
 
- **Аутентификация**
+Сервер (server/.env)
 
-POST	/api/auth/register	Регистрация
+.env
 
-POST	/api/auth/login	Вход
+MONGO_URI=mongodb://localhost:27017/finance
 
-GET	/api/auth/me	Получить текущего пользователя
+JWT_SECRET=dev-secret-key
 
- **Категории**
+PORT=5001
 
-GET	/api/categories	Получить все категории пользователя
+FRONTEND_URL=http://localhost:5173
 
-POST	/api/categories	Создать категорию
+Клиент (client/.env)
 
-PUT	/api/categories/:id	Обновить категорию
+.env
 
-DELETE	/api/categories/:id	Удалить категорию (и все её транзакции)
+VITE_API_URL=http://localhost:5001/api
 
- **Транзакции**
+🚀 **Деплой**
 
-GET	/api/transactions	Получить все транзакции
+**Сервер (Render)**
 
-POST	/api/transactions	Создать транзакцию
+Создайте аккаунт на render.com
 
-PUT	/api/transactions/:id	Обновить транзакцию
+Нажмите New + → Web Service
 
-DELETE	/api/transactions/:id	Удалить транзакцию
+Подключите GitHub репозиторий
 
-**Прогноз**
+Настройки:
 
-GET	/api/forecast?period=month&months=3&inflation=0.05	Получить прогноз
+Root Directory: server
 
-**Экспорт**
+Build Command: npm install && npm run build
 
-POST	/api/export/pdf	Сгенерировать PDF с транзакциями
+Start Command: npm start
 
-📄 Лицензия
-Проект распространяется под лицензией MIT. См. файл LICENSE.
+Добавьте переменные окружения:
+
+MONGO_URI – строка из MongoDB Atlas
+
+JWT_SECRET – сгенерируйте: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+FRONTEND_URL – URL вашего фронтенда (после деплоя клиента)
+
+**Клиент (Vercel)**
+Создайте аккаунт на vercel.com
+
+Нажмите Add New... → Project
+
+Импортируйте GitHub репозиторий
+
+Настройки:
+
+Root Directory: client
+
+Build Command: npm run build
+
+Output Directory: dist
+
+Добавьте переменную окружения:
+
+VITE_API_URL – URL вашего сервера на Render (например, https://your-api.onrender.com/api)
 
 👨‍💻 Автор
-Alex Pankov
-GitHub
+**Alex Pankov**
 
-🙏 Благодарности
 
-Remix Icon – иконки
+## **Что нужно сделать:**
 
-Recharts – графики
+1. **Создайте файлы `.env.example`** (если ещё нет):
+   - `server/.env.example`
+   - `client/.env.example`
 
-i18next – интернационализация
+2. **Проверьте, что в `.gitignore` добавлены:**
+.env
 
-MongoDB Atlas – бесплатная база данных
+.env.local
+
+.env.production
+
+3. **Закоммитьте изменения:**
+
+git add .
+
+git commit -m "docs: update README with installation and deployment instructions"
+
+git push
+
+**Важно для локальной установки:**
+
+**После того как пользователь склонирует репозиторий, ему нужно:**
+
+Скопировать .env.example в .env в обеих папках
+
+Установить зависимости npm install
+
+Запустить MongoDB локально или указать Atlas в .env
+
+Запустить сервер и клиент
+
+Всё должно работать без ошибок.
