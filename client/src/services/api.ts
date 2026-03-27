@@ -1,6 +1,10 @@
 // Определяем базовый URL API
 // ВАЖНО: VITE_API_URL будет подставлен при сборке
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+// const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
+const API_BASE = import.meta.env.PROD 
+  ? 'https://personal-finance-manager-bj8a.onrender.com/api'
+  : import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 const getAuthHeaders = (): HeadersInit => {
   const token = localStorage.getItem('token');
