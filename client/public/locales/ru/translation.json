@@ -71,7 +71,16 @@
   "darkTheme": "🌙 Тёмная",
   "grayTheme": "⚙️ Серая",
   "blueTheme": "💙 Синяя",
-  "accentColor": "Акцентный цвет"
-
-
+  "accentColor": "Акцентный цвет",
+  "importing": "Импорт...",
+  "importFromBank": "Импорт из банка (мок)",
+  "categoryDeleted": "Категория удалена",
+  "transactionAdded": "Транзакция добавлена",
+  "transactionDeleted": "Транзакция удалена",
+  "transactionAddError": "Ошибка при добавлении транзакции",
+  "deleteError": "Ошибка при удалении",
+  "categoryAdded": "Категория добавлена",
+  "categoryAddError": "Ошибка при добавлении категории",
+  "deleteCategoryError": "Ошибка при удалении категории"
+  
 }

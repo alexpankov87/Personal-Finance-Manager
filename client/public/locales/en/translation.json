@@ -68,5 +68,15 @@
   "darkTheme": "🌙 Dark",
   "grayTheme": "⚙️ Gray",
   "blueTheme": "💙 Blue",
-  "accentColor": "Accent Color"
+  "accentColor": "Accent Color",
+  "importing": "Importing...",
+  "importFromBank": "Import from bank (mock)",
+  "categoryDeleted": "Category deleted",
+  "transactionAdded": "Transaction added",
+  "transactionDeleted": "Transaction deleted",
+  "transactionAddError": "Error adding transaction",
+  "deleteError": "Error deleting",
+  "categoryAdded": "Category added",
+  "categoryAddError": "Error adding category",
+  "deleteCategoryError": "Error deleting category"
 }

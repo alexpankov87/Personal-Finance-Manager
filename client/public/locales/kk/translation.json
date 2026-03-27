@@ -69,6 +69,15 @@
   "darkTheme": "🌙 Қараңғы",
   "grayTheme": "⚙️ Сұр",
   "blueTheme": "💙 Көк",
-  "accentColor": "Акцент түс"
-
+  "accentColor": "Акцент түс",
+  "importing": "Импортталуда...",
+  "importFromBank": "Банктан импорт (мок)",
+  "categoryDeleted": "Санат жойылды",
+  "transactionAdded": "Транзакция қосылды",
+  "transactionDeleted": "Транзакция жойылды",
+  "transactionAddError": "Транзакцияны қосу қатесі",
+  "deleteError": "Жоюда қате кетті",
+  "categoryAdded": "Санат қосылды",
+  "categoryAddError": "Санатты қосу қатесі",
+  "deleteCategoryError": "Санатты жоюда қате кетті"
 }

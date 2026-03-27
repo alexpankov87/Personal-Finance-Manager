@@ -5,6 +5,7 @@ import { fetchMockBankTransactions, importBankTransactions } from '../services/a
 import Dashboard from '../Dashboard';
 import RecurringManager from '../RecurringManager';
 import Papa from 'papaparse';
+import toast from 'react-hot-toast';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import ThemeSwitcher from './ThemeSwitcher';
@@ -12,6 +13,7 @@ import { useCategories } from '../hooks/useCategories';
 import { useTransactions } from '../hooks/useTransactions';
 import { useForecast } from '../hooks/useForecast';
 import { useRecurring } from '../hooks/useRecurring';
+
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
@@ -24,6 +26,7 @@ function DashboardLayout() {
     i18n.changeLanguage(lng);
   };
 
+  const [isImporting, setIsImporting] = useState(false);
   const [showThemePanel, setShowThemePanel] = useState(false);
   const [newCatName, setNewCatName] = useState('');
   const [newCatType, setNewCatType] = useState<'income' | 'expense'>('expense');
@@ -76,17 +79,19 @@ function DashboardLayout() {
         color: newCatColor,
         icon: newCatIcon
       });
+      toast.success(t('categoryAdded'));
       setNewCatName('');
       setNewCatIcon('restaurant-line');
     } catch (error) {
       console.error('Failed to create category', error);
+      toast.error(t('categoryAddError'));
     }
   };
 
   const handleAddTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTransaction.category) {
-      alert(t('selectCategory'));
+       toast.error(t('selectCategory'));
       return;
     }
     try {
@@ -97,6 +102,7 @@ function DashboardLayout() {
         date: newTransaction.date,
         description: newTransaction.description,
       });
+      toast.success(t('transactionAdded'));
       setNewTransaction({
         amount: '',
         type: 'expense',
@@ -106,6 +112,7 @@ function DashboardLayout() {
       });
     } catch (error) {
       console.error('Failed to create transaction', error);
+      toast.error(t('transactionAddError'));
     }
   };
 
@@ -113,8 +120,10 @@ function DashboardLayout() {
     if (window.confirm(t('deleteConfirm'))) {
       try {
         await deleteTransaction(id);
+        toast.success(t('transactionDeleted'));
       } catch (error) {
         console.error('Failed to delete transaction', error);
+        toast.error(t('deleteError'));
       }
     }
   };
@@ -139,13 +148,18 @@ function DashboardLayout() {
   };
 
   const importFromBank = async () => {
+    if (isImporting) return;
+
+    setIsImporting(true);
     try {
       const mockTransactions = await fetchMockBankTransactions();
       const result = await importBankTransactions(mockTransactions);
-      alert(`Импортировано ${result.transactions.length} транзакций`);
+      toast.success(`Импортировано ${result.transactions.length} транзакций`);
     } catch (error) {
       console.error('Import failed', error);
-      alert('Ошибка импорта');
+      toast.error('Ошибка импорта');
+    } finally {
+      setIsImporting(false);
     }
   };
 
@@ -304,9 +318,14 @@ function DashboardLayout() {
                 <i className={`ri-${cat.icon}`} style={{ marginRight: '8px', fontSize: '24px' }}></i>
                 {cat.name} ({cat.type === 'expense' ? t('expenseType') : t('incomeType')})
                 <button 
-                  onClick={() => {
+                  onClick={async () => {
                     if (window.confirm(t('deleteCategoryConfirm'))) {
-                      deleteCategory(cat._id);
+                      try {
+                        await deleteCategory(cat._id);
+                        toast.success(t('categoryDeleted'));
+                      } catch (error) {
+                        toast.error(t('deleteCategoryError'));
+                      }
                     }
                   }}
                   className="icon-button"
@@ -366,7 +385,13 @@ function DashboardLayout() {
 
           <h2>{t('transactionList')}</h2>
           <div className="export-buttons">
-            <button onClick={importFromBank}>Импорт из банка (мок)</button>
+            <button 
+                onClick={importFromBank} 
+                disabled={isImporting}
+                style={{ opacity: isImporting ? 0.6 : 1 }}
+              >
+                {isImporting ? t('importing') : t('importFromBank')}
+              </button>
             <button onClick={exportToCSV}>{t('exportCSV')}</button>
             <button onClick={exportToPDF}>{t('exportPDF')}</button>
           </div>
@@ -393,7 +418,7 @@ function DashboardLayout() {
                           {tx.category.name}
                         </>
                       ) : (
-                        <span style={{ color: 'red' }}>Категория удалена</span>
+                        <span style={{ color: 'red' }}>{t('categoryDeleted')}</span>
                       )}
                     </td>
                     <td style={{ padding: '8px' }}>{tx.description || '-'}</td>
