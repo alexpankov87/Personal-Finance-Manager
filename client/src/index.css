@@ -141,17 +141,31 @@ button:disabled {
     transform: none;
 }
 
-/* Header buttons row */
+/* Header buttons - языки, тема, выход */
 .header-buttons {
     display: flex;
     justify-content: flex-end;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
+    gap: 8px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .header-buttons button {
-    flex: 0 0 auto;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 70px;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.header-buttons button:hover {
+    background-color: var(--button-hover);
 }
 
 /* Typography */
@@ -525,6 +539,12 @@ tr:hover {
     .header-buttons {
         justify-content: center;
     }
+
+    .header-buttons button {
+        font-size: 11px;
+        padding: 4px 8px;
+        min-width: 60px;
+    }
 }
 
 @media (max-width: 640px) {
@@ -559,12 +579,13 @@ tr:hover {
     }
 
     .header-buttons {
-        gap: var(--spacing-xs);
+        gap: 5px;
     }
 
     .header-buttons button {
-        font-size: 11px;
-        padding: 4px 8px;
+        font-size: 10px;
+        padding: 4px 6px;
+        min-width: 50px;
     }
 
     .balance-container .card {
@@ -582,6 +603,9 @@ tr:hover {
     }
 }
 
+/* ============================================ */
+/* КОСТЫЛИ для переопределения инлайн-стилей     */
+/* ============================================ */
 
 @media (max-width: 768px) {
     .export-buttons button {
