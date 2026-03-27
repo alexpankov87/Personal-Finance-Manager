@@ -141,7 +141,7 @@ button:disabled {
     transform: none;
 }
 
-/* Header buttons - языки, тема, выход */
+/* Header buttons */
 .header-buttons {
     display: flex;
     justify-content: flex-end;
@@ -161,7 +161,6 @@ button:disabled {
     flex-shrink: 0;
     min-width: 70px;
     text-align: center;
-    transition: background-color 0.2s;
 }
 
 .header-buttons button:hover {
@@ -206,7 +205,7 @@ h3 {
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-/* Balance container */
+/* Balance */
 .balance-container {
     display: flex;
     gap: var(--spacing-md);
@@ -221,7 +220,6 @@ h3 {
     text-align: center;
 }
 
-/* Balance text */
 .income-text,
 .expense-text,
 .balance-positive,
@@ -247,7 +245,7 @@ h3 {
     color: var(--balance-negative);
 }
 
-/* Content container (categories + transactions) */
+/* Content container */
 .content-container {
     display: flex;
     gap: var(--spacing-xl);
@@ -291,6 +289,9 @@ h3 {
 
 /* Category list */
 .category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -299,11 +300,9 @@ h3 {
 .category-item {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) 0;
+    gap: 8px;
+    padding: 8px 0;
     border-bottom: 1px solid var(--border-color);
-    flex-wrap: wrap;
-    width: 100%;
 }
 
 .category-item:last-child {
@@ -440,32 +439,8 @@ tr:hover {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-.category-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.category-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.category-item:last-child {
-    border-bottom: none;
-}
-
-.category-item button {
-    margin-left: auto;
-}
 /* ============================================ */
-/* RESPONSIVE - Mobile First */
+/* RESPONSIVE */
 /* ============================================ */
 
 @media (max-width: 768px) {
@@ -515,6 +490,8 @@ tr:hover {
 
     .export-buttons button {
         flex: 0 0 auto;
+        width: auto !important;
+        white-space: nowrap !important;
     }
 
     .forecast-stats {
@@ -598,8 +575,8 @@ tr:hover {
     }
 
     .export-buttons button {
-        width: 100%;
-        white-space: normal;
+        width: 100% !important;
+        white-space: normal !important;
     }
 
     .header-buttons {
@@ -625,15 +602,6 @@ tr:hover {
         padding: 4px 3px;
         font-size: 11px;
     }
-}
-
-
-@media (max-width: 768px) {
-    .export-buttons button {
-        width: auto !important;
-        flex: 0 1 auto !important;
-        white-space: nowrap !important;
-    }
 
     .form-group button {
         width: auto !important;
@@ -653,36 +621,7 @@ tr:hover {
         min-width: 500px !important;
     }
 
-    .category-item {
-        flex-wrap: wrap !important;
-    }
-
-    .category-item button {
-        margin-left: auto !important;
-    }
-
     .balance-container {
         flex-direction: column !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .export-buttons {
-        flex-direction: column !important;
-    }
-
-    .export-buttons button {
-        width: 100% !important;
-        white-space: normal !important;
-    }
-
-    .category-item {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-    }
-
-    .category-item button {
-        margin-left: 0 !important;
-        align-self: flex-start !important;
     }
 }
