@@ -3,9 +3,6 @@
 **/package-lock.json
 **/dist
 **/dist-ssr
-**/.env
-**/.env.local
-**/.env.*.local
 
 # Logs
 logs
@@ -15,6 +12,12 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Environment files (НЕ коммитим)
+**/.env
+**/.env.local
+**/.env.production
+**/.env.*.local
 
 # Editor directories and files
 .vscode/*

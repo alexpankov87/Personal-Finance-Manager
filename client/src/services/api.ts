@@ -1,4 +1,6 @@
-const API_BASE = 'http://localhost:5001/api';
+// Определяем базовый URL API
+// ВАЖНО: VITE_API_URL будет подставлен при сборке
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 const getAuthHeaders = (): HeadersInit => {
   const token = localStorage.getItem('token');
@@ -44,6 +46,16 @@ export const createTransaction = async (data: {
     body: JSON.stringify(data)
   });
   if (!res.ok) throw new Error('Failed to create transaction');
+  return res.json();
+};
+
+export const updateTransaction = async (id: string, data: any) => {
+  const res = await fetch(`${API_BASE}/transactions/${id}`, {
+    method: 'PUT',
+    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to update transaction');
   return res.json();
 };
 
@@ -119,13 +131,9 @@ export const fetchForecast = async (months = 3, inflation = 0.05, period = 'mont
   return res.json();
 };
 
-export const updateTransaction = async (id: string, data: any) => {
-  const res = await fetch(`${API_BASE}/transactions/${id}`, {
-    method: 'PUT',
-    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error('Failed to update transaction');
+export const checkHealth = async () => {
+  const res = await fetch(`${API_BASE}/health`);
+  if (!res.ok) throw new Error('Health check failed');
   return res.json();
 };
 
