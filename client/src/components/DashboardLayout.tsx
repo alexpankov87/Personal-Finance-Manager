@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'remixicon/fonts/remixicon.css';
 import { useTranslation } from 'react-i18next';
-import { fetchMockBankTransactions, importBankTransactions, checkHealth } from '../services/api';
+import { fetchMockBankTransactions, importBankTransactions } from '../services/api';
 import Dashboard from '../Dashboard';
 import RecurringManager from '../RecurringManager';
 import Papa from 'papaparse';
