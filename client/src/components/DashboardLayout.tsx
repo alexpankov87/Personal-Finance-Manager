@@ -201,9 +201,15 @@ function DashboardLayout() {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginBottom: '10px' }}>
-        <button onClick={() => changeLanguage('ru')}>Русский</button>
-        <button onClick={() => changeLanguage('en')}>English</button>
-        <button onClick={() => changeLanguage('kk')}>Қазақша</button>
+        <button onClick={() => changeLanguage('ru')}>
+            <span className="fi fi-ru"></span>
+        </button>
+        <button onClick={() => changeLanguage('en')}>
+            <span className="fi fi-gb"></span>
+        </button>
+        <button onClick={() => changeLanguage('kk')}>
+            <span className="fi fi-kz"></span> 
+        </button>
         <button onClick={toggleTheme}>
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
