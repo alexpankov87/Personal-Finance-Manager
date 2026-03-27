@@ -18,6 +18,11 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
   }
 
   const token = authHeader.split(' ')[1];
+  if (!token) {
+    console.log('❌ Token is empty');
+    return res.status(401).json({ message: 'Invalid token format' });
+  }
+  
   console.log('🔑 Token received:', token.substring(0, 30) + '...');
   console.log('🔐 JWT_SECRET exists?', !!JWT_SECRET);
   
@@ -27,7 +32,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
   }
   
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as unknown as { userId: string };
     console.log('✅ Decoded userId:', decoded.userId);
     req.userId = decoded.userId;
     next();
