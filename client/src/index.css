@@ -25,8 +25,6 @@
     --spacing-lg: 16px;
     --spacing-xl: 20px;
     --spacing-2xl: 24px;
-    --border-radius: 8px;
-    --border-radius-sm: 6px;
 }
 
 [data-theme="dark"] {
@@ -83,6 +81,7 @@ body {
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     transition: background-color 0.3s, color 0.3s;
     padding: var(--spacing-md);
+    overflow-x: hidden;
 }
 
 @media (min-width: 768px) {
@@ -95,7 +94,7 @@ body {
 .app-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0;
+    overflow-x: hidden;
 }
 
 /* Buttons */
@@ -104,7 +103,7 @@ button {
     color: var(--button-text);
     border: none;
     padding: 6px 12px;
-    border-radius: var(--border-radius-sm);
+    border-radius: 6px;
     cursor: pointer;
     font-size: var(--font-sm);
     transition: background-color 0.2s;
@@ -113,6 +112,7 @@ button {
     gap: var(--spacing-xs);
     white-space: nowrap;
     line-height: 1.4;
+    flex-shrink: 0;
 }
 
 button:hover {
@@ -156,13 +156,21 @@ button:disabled {
 
 /* Typography */
 h1 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     margin-bottom: var(--spacing-md);
     color: var(--text-primary);
+    word-break: break-word;
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.3rem;
+        text-align: center;
+    }
 }
 
 h2 {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     margin-bottom: var(--spacing-md);
     margin-top: var(--spacing-xl);
     color: var(--text-primary);
@@ -178,7 +186,7 @@ h3 {
 /* Cards */
 .card {
     background-color: var(--card-bg);
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     padding: var(--spacing-md);
     box-shadow: var(--card-shadow);
     transition: background-color 0.3s, box-shadow 0.3s;
@@ -190,6 +198,7 @@ h3 {
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-2xl);
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .balance-container .card {
@@ -205,6 +214,7 @@ h3 {
 .balance-negative {
     font-size: var(--font-lg);
     font-weight: 500;
+    word-break: break-word;
 }
 
 .income-text {
@@ -229,11 +239,13 @@ h3 {
     gap: var(--spacing-xl);
     flex-wrap: wrap;
     margin-top: var(--spacing-lg);
+    width: 100%;
 }
 
 .content-col {
     flex: 1;
     min-width: 250px;
+    overflow-x: hidden;
 }
 
 /* Forms */
@@ -251,10 +263,11 @@ h3 {
     border: 1px solid var(--border-color);
     color: var(--text-primary);
     padding: 6px 10px;
-    border-radius: var(--border-radius-sm);
+    border-radius: 6px;
     font-size: var(--font-sm);
     width: auto;
-    min-width: 120px;
+    min-width: 100px;
+    flex: 1 1 auto;
 }
 
 .form-group button {
@@ -276,6 +289,7 @@ h3 {
     padding: var(--spacing-sm) 0;
     border-bottom: 1px solid var(--border-color);
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .category-item:last-child {
@@ -291,6 +305,7 @@ h3 {
     font-size: 1.2rem;
     width: 28px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 /* Tables */
@@ -299,17 +314,19 @@ h3 {
     overflow-x: auto;
     width: 100%;
     margin-top: var(--spacing-md);
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     font-size: var(--font-sm);
+    min-width: 500px;
 }
 
 th,
 td {
-    padding: 10px 8px;
+    padding: 8px 6px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
 }
@@ -329,15 +346,18 @@ tr:hover {
     gap: var(--spacing-sm);
     margin: var(--spacing-md) 0;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .export-buttons button {
     flex: 0 0 auto;
+    white-space: nowrap;
 }
 
 /* Forecast */
 .forecast-card {
     margin-top: var(--spacing-2xl);
+    overflow-x: hidden;
 }
 
 .forecast-stats {
@@ -352,7 +372,8 @@ tr:hover {
     min-width: 180px;
     background-color: var(--bg-secondary);
     padding: var(--spacing-md);
-    border-radius: var(--border-radius-sm);
+    border-radius: 6px;
+    word-break: break-word;
 }
 
 /* Dashboard */
@@ -373,9 +394,10 @@ tr:hover {
     margin-top: var(--spacing-2xl);
     padding-top: var(--spacing-xl);
     border-top: 1px solid var(--border-color);
+    overflow-x: auto;
 }
 
-/* Modal overlay */
+/* Modal */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -397,12 +419,17 @@ tr:hover {
     border-radius: 12px;
     padding: 24px;
     z-index: 1000;
-    min-width: 300px;
+    min-width: 280px;
     max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive */
+/* ============================================ */
+/* RESPONSIVE - Mobile First */
+/* ============================================ */
+
 @media (max-width: 768px) {
     body {
         padding: var(--spacing-sm);
@@ -445,11 +472,11 @@ tr:hover {
     .export-buttons {
         flex-direction: row;
         flex-wrap: wrap;
+        justify-content: flex-start;
     }
 
     .export-buttons button {
-        flex: 1 0 auto;
-        white-space: nowrap;
+        flex: 0 0 auto;
     }
 
     .forecast-stats {
@@ -472,22 +499,20 @@ tr:hover {
     th,
     td {
         padding: 6px 4px;
+        font-size: 12px;
     }
-}
 
-@media (max-width: 640px) {
+    table {
+        min-width: 550px;
+    }
+
+    .transactions-table table {
+        min-width: 500px;
+    }
+
     button {
         font-size: 12px;
         padding: 5px 10px;
-    }
-
-    .header-buttons {
-        justify-content: center;
-    }
-
-    .export-buttons button {
-        white-space: normal;
-        font-size: 11px;
     }
 
     .income-text,
@@ -495,6 +520,21 @@ tr:hover {
     .balance-positive,
     .balance-negative {
         font-size: 18px;
+    }
+
+    .header-buttons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .export-buttons button {
+        white-space: nowrap;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+        text-align: center;
     }
 }
 
@@ -516,5 +556,88 @@ tr:hover {
     .export-buttons button {
         width: 100%;
         white-space: normal;
+    }
+
+    .header-buttons {
+        gap: var(--spacing-xs);
+    }
+
+    .header-buttons button {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .balance-container .card {
+        padding: var(--spacing-sm);
+    }
+
+    .card {
+        padding: var(--spacing-sm);
+    }
+
+    th,
+    td {
+        padding: 4px 3px;
+        font-size: 11px;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .export-buttons button {
+        width: auto !important;
+        flex: 0 1 auto !important;
+        white-space: nowrap !important;
+    }
+
+    .form-group button {
+        width: auto !important;
+        align-self: flex-start !important;
+    }
+
+    .content-container {
+        flex-direction: column !important;
+    }
+
+    .content-container>div {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+
+    .transactions-table table {
+        min-width: 500px !important;
+    }
+
+    .category-item {
+        flex-wrap: wrap !important;
+    }
+
+    .category-item button {
+        margin-left: auto !important;
+    }
+
+    .balance-container {
+        flex-direction: column !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .export-buttons {
+        flex-direction: column !important;
+    }
+
+    .export-buttons button {
+        width: 100% !important;
+        white-space: normal !important;
+    }
+
+    .category-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .category-item button {
+        margin-left: 0 !important;
+        align-self: flex-start !important;
     }
 }
