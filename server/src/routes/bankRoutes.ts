@@ -61,18 +61,38 @@ router.post('/import', async (req: AuthRequest, res) => {
     
     const created = [];
     for (const t of transactions) {
-      const transaction = new Transaction({
+      // Проверяем, есть ли уже такая транзакция за последние 24 часа
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      const existing = await Transaction.findOne({
+        user: userId,
         amount: t.amount,
         type: t.type,
         category: t.category,
-        date: t.date,
         description: t.description,
-        user: userId, 
+        date: { $gte: yesterday }
       });
-      await transaction.save();
-      created.push(transaction);
+      
+      if (!existing) {
+        const transaction = new Transaction({
+          amount: t.amount,
+          type: t.type,
+          category: t.category,
+          date: t.date,
+          description: t.description,
+          user: userId,
+        });
+        await transaction.save();
+        created.push(transaction);
+      }
     }
-    res.json({ message: `Imported ${created.length} transactions`, transactions: created });
+    
+    res.json({ 
+      message: `Imported ${created.length} new transactions`, 
+      transactions: created,
+      skipped: transactions.length - created.length 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Import failed' });

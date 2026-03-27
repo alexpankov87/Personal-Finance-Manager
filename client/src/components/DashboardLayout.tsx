@@ -154,7 +154,7 @@ function DashboardLayout() {
     try {
       const mockTransactions = await fetchMockBankTransactions();
       const result = await importBankTransactions(mockTransactions);
-      toast.success(`Импортировано ${result.transactions.length} транзакций`);
+      toast.success(`Импортировано ${result.transactions.length} новых транзакций (${result.skipped} пропущено)`);
     } catch (error) {
       console.error('Import failed', error);
       toast.error('Ошибка импорта');
@@ -314,26 +314,26 @@ function DashboardLayout() {
           </form>
           <ul className="category-list">
            {categories.map(cat => (
-              <li key={cat._id} className="category-item">
-                <i className={`ri-${cat.icon}`} style={{ marginRight: '8px', fontSize: '24px' }}></i>
-                {cat.name} ({cat.type === 'expense' ? t('expenseType') : t('incomeType')})
-                <button 
-                  onClick={async () => {
-                    if (window.confirm(t('deleteCategoryConfirm'))) {
-                      try {
-                        await deleteCategory(cat._id);
-                        toast.success(t('categoryDeleted'));
-                      } catch (error) {
-                        toast.error(t('deleteCategoryError'));
-                      }
+            <li key={cat._id} className="category-item">
+              <i className={`ri-${cat.icon}`} style={{ marginRight: '8px', fontSize: '24px' }}></i>
+              {cat.name} ({cat.type === 'expense' ? t('expenseType') : t('incomeType')})
+              <button 
+                onClick={async () => {
+                  if (window.confirm(t('deleteCategoryConfirm'))) {
+                    try {
+                      await deleteCategory(cat._id);
+                      toast.success(t('categoryDeleted'));
+                    } catch (error) {
+                      toast.error(t('deleteCategoryError'));
                     }
-                  }}
-                  className="icon-button"
-                  style={{ marginLeft: '8px', color: 'var(--expense-color)' }}
-                >
-                  <i className="ri-delete-bin-line"></i>
-                </button>
-              </li>
+                  }
+                }}
+                className="icon-button"
+                style={{ marginLeft: '8px', color: 'var(--expense-color)' }}
+              >
+                <i className="ri-delete-bin-line"></i>
+              </button>
+            </li>
             ))}
           </ul>
         </div>
