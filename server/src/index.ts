@@ -40,6 +40,13 @@ cron.schedule('*/5 * * * *', () => {
   processRecurringTransactions().catch(console.error);
 });
 
+app.use((req, res, next) => {
+    if (req.path === '/api/health') {
+        console.log(`🔍 Health check from ${req.ip} at ${new Date().toISOString()}`);
+    }
+    next();
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
