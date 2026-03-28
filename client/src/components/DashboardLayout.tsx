@@ -68,7 +68,13 @@ function DashboardLayout() {
       .then(res => res.json())
       .then(data => setMessage(data.message))
       .catch(() => setMessage(t('serverError')));
+    // Пингуем сервер каждые 10 минут, пока страница открыта
+    const interval = setInterval(() => {
+        fetch(`${API_BASE}/health`).catch(() => {});
+    }, 10 * 60 * 1000);
+    return () => clearInterval(interval);
   }, [t]);
+
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
