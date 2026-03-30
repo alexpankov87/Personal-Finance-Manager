@@ -13,24 +13,67 @@ import { AuthProvider } from './context/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
 i18n
-  .use(HttpApi)
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    supportedLngs: ['ru', 'en', 'kk'],
-    fallbackLng: 'ru',
-    detection: {
-      order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
-      caches: ['localStorage', 'cookie'],
-    },
-    backend: {
-      loadPath: '/locales/{{lng}}/translation.json',
-    },
-    react: {
-      useSuspense: false,
-    },
-  });
-
+    .use(HttpApi)
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+        supportedLngs: ['ru', 'en', 'kk'],
+        fallbackLng: 'ru',
+        detection: {
+            order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
+            caches: ['localStorage', 'cookie'],
+        },
+        backend: {
+            loadPath: '/locales/{{lng}}/translation.json',
+        },
+        react: {
+            useSuspense: false,
+        },
+        // Добавляем fallback-тексты, если файл не загрузился
+        resources: {
+            ru: {
+                translation: {
+                      login: "Вход",
+                      loginButton: "Войти",
+                      register: "Регистрация",
+                      registerButton: "Зарегистрироваться",
+                      registerError: "Ошибка регистрации. Возможно, email уже используется.",
+                      email: "Электронная почта",
+                      password: "Пароль",
+                      name: "Имя",
+                      noAccount: "Нет аккаунта?",
+                      haveAccount: "Уже есть аккаунт?",
+                      invalidCredentials: "Неверный email или пароль"
+                  }
+            },
+            en: {
+                translation: {
+                    login: "Login",
+                    loginButton: "Log in",
+                    register: "Register",
+                    registerButton: "Register",
+                    email: "Email",
+                    password: "Password",
+                    noAccount: "No account?",
+                    haveAccount: "Already have an account?",
+                    invalidCredentials: "Invalid email or password"
+                }
+            },
+            kk: {
+                translation: {
+                    login: "Кіру",
+                    loginButton: "Кіру",
+                    register: "Тіркелу",
+                    registerButton: "Тіркелу",
+                    email: "Электрондық пошта",
+                    password: "Құпия сөз",
+                    noAccount: "Аккаунт жоқ?",
+                    haveAccount: "Аккаунт бар?",
+                    invalidCredentials: "Қате email немесе құпия сөз"
+                }
+            }
+        }
+    });
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ErrorBoundary>
